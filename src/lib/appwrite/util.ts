@@ -4,7 +4,7 @@ import { account } from ".";
  * @description Check if the user is logged in and throw an error if not otherwise return the user
  * @returns user
  */
-async function checkIfUserIsLoggedIn() {
+async function checkIfUserIsLoggedIn(safe = false) {
   let user;
   try {
     user = await account.get();
@@ -12,7 +12,9 @@ async function checkIfUserIsLoggedIn() {
       throw new Error("User is not logged in");
     }
   } catch {
-    throw new Error("User is not logged in");
+    if (!safe) {
+      throw new Error("User is not logged in");
+    }
   }
   return user;
 }

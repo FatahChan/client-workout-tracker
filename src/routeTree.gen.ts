@@ -11,8 +11,8 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LoginImport } from './routes/login'
 import { Route as ProtectedImport } from './routes/_protected'
+import { Route as LoginIndexImport } from './routes/login/index'
 import { Route as ProtectedIndexImport } from './routes/_protected/index'
 import { Route as ProtectedClientsIndexImport } from './routes/_protected/clients/index'
 import { Route as ProtectedClientsClientIdIndexImport } from './routes/_protected/clients/$clientId/index'
@@ -20,13 +20,13 @@ import { Route as ProtectedClientsClientIdPagesPageIdIndexImport } from './route
 
 // Create/Update Routes
 
-const LoginRoute = LoginImport.update({
-  path: '/login',
+const ProtectedRoute = ProtectedImport.update({
+  id: '/_protected',
   getParentRoute: () => rootRoute,
 } as any)
 
-const ProtectedRoute = ProtectedImport.update({
-  id: '/_protected',
+const LoginIndexRoute = LoginIndexImport.update({
+  path: '/login/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -63,19 +63,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedImport
       parentRoute: typeof rootRoute
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
-      parentRoute: typeof rootRoute
-    }
     '/_protected/': {
       id: '/_protected/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof ProtectedIndexImport
       parentRoute: typeof ProtectedImport
+    }
+    '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginIndexImport
+      parentRoute: typeof rootRoute
     }
     '/_protected/clients/': {
       id: '/_protected/clients/'
@@ -124,16 +124,16 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '': typeof ProtectedRouteWithChildren
-  '/login': typeof LoginRoute
   '/': typeof ProtectedIndexRoute
+  '/login': typeof LoginIndexRoute
   '/clients': typeof ProtectedClientsIndexRoute
   '/clients/$clientId': typeof ProtectedClientsClientIdIndexRoute
   '/clients/$clientId/pages/$pageId': typeof ProtectedClientsClientIdPagesPageIdIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/login': typeof LoginRoute
   '/': typeof ProtectedIndexRoute
+  '/login': typeof LoginIndexRoute
   '/clients': typeof ProtectedClientsIndexRoute
   '/clients/$clientId': typeof ProtectedClientsClientIdIndexRoute
   '/clients/$clientId/pages/$pageId': typeof ProtectedClientsClientIdPagesPageIdIndexRoute
@@ -142,8 +142,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_protected': typeof ProtectedRouteWithChildren
-  '/login': typeof LoginRoute
   '/_protected/': typeof ProtectedIndexRoute
+  '/login/': typeof LoginIndexRoute
   '/_protected/clients/': typeof ProtectedClientsIndexRoute
   '/_protected/clients/$clientId/': typeof ProtectedClientsClientIdIndexRoute
   '/_protected/clients/$clientId/pages/$pageId/': typeof ProtectedClientsClientIdPagesPageIdIndexRoute
@@ -153,23 +153,23 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
-    | '/login'
     | '/'
+    | '/login'
     | '/clients'
     | '/clients/$clientId'
     | '/clients/$clientId/pages/$pageId'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/login'
     | '/'
+    | '/login'
     | '/clients'
     | '/clients/$clientId'
     | '/clients/$clientId/pages/$pageId'
   id:
     | '__root__'
     | '/_protected'
-    | '/login'
     | '/_protected/'
+    | '/login/'
     | '/_protected/clients/'
     | '/_protected/clients/$clientId/'
     | '/_protected/clients/$clientId/pages/$pageId/'
@@ -178,12 +178,12 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   ProtectedRoute: typeof ProtectedRouteWithChildren
-  LoginRoute: typeof LoginRoute
+  LoginIndexRoute: typeof LoginIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   ProtectedRoute: ProtectedRouteWithChildren,
-  LoginRoute: LoginRoute,
+  LoginIndexRoute: LoginIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -199,7 +199,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_protected",
-        "/login"
+        "/login/"
       ]
     },
     "/_protected": {
@@ -211,12 +211,12 @@ export const routeTree = rootRoute
         "/_protected/clients/$clientId/pages/$pageId/"
       ]
     },
-    "/login": {
-      "filePath": "login.tsx"
-    },
     "/_protected/": {
       "filePath": "_protected/index.tsx",
       "parent": "/_protected"
+    },
+    "/login/": {
+      "filePath": "login/index.tsx"
     },
     "/_protected/clients/": {
       "filePath": "_protected/clients/index.tsx",
