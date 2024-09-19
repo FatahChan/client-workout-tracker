@@ -4,9 +4,14 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/login")({
   beforeLoad: async () => {
-    const user = await account.get();
-    if (user) {
-      throw redirect({ to: "/" });
+    try {
+      const user = await account.get();
+      console.log(user);
+      if (user) {
+        throw redirect({ to: "/" });
+      }
+    } catch (error) {
+      return { error };
     }
   },
   component: LoginPage,

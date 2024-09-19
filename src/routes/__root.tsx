@@ -6,8 +6,13 @@ import {
   Outlet,
   useRouter,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
+
+const TanStackRouterDevtools = lazy(() =>
+  import("@tanstack/router-devtools").then(({ TanStackRouterDevtools }) => ({
+    default: TanStackRouterDevtools,
+  }))
+);
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -39,7 +44,11 @@ function Root() {
     <CatchBoundary getResetKey={() => "reset"} errorComponent={ErrorBoundary}>
       <div className="w-full px-2 py-4">
         <Outlet />
-        <TanStackRouterDevtools />
+        {process.env.NODE_ENV === "development" && (
+          <Suspense fallback={null}>
+            <TanStackRouterDevtools />
+          </Suspense>
+        )}
       </div>
     </CatchBoundary>
   );
