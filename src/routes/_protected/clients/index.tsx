@@ -138,9 +138,13 @@ function ClientsPage() {
         <AddClientButton />
         {data?.documents.map((client) => (
           <CardTile key={client.$id}>
-            <Button variant={"ghost"} asChild>
+            <Button
+              variant={"ghost"}
+              asChild
+              className="w-full h-full flex justify-center items-center"
+            >
               <Link to={`/clients/${client.$id}`}>
-                <h3 className="text-lg font-bold w-full">{client.name}</h3>
+                <h3 className="text-lg font-bold">{client.name}</h3>
               </Link>
             </Button>
           </CardTile>
