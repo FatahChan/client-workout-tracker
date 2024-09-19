@@ -18,7 +18,7 @@ export const Route = createFileRoute("/login")({
         throw redirect({ to: "/" });
       }
     } catch {
-      console.log("User is not logged in");
+      return;
     }
   },
   component: () => <LoginPage />,
