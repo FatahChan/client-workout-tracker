@@ -8,6 +8,7 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 import { account } from "@/lib/appwrite";
+import { checkIfUserIsLoggedIn } from "@/lib/appwrite/util";
 import { useMutation } from "@tanstack/react-query";
 import {
   createFileRoute,
@@ -21,9 +22,8 @@ import { ArrowLeft, Menu as MenuIcon } from "lucide-react";
 export const Route = createFileRoute("/_protected")({
   beforeLoad: async () => {
     try {
-      const user = await account.get();
-      console.log(user);
-      if (!user) {
+      const user = await checkIfUserIsLoggedIn();
+      if (!user?.$id) {
         throw redirect({ to: "/login" });
       }
     } catch {

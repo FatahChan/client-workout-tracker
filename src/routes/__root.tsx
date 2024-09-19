@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { QueryClient } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/sonner";
+
 import {
   CatchBoundary,
   createRootRouteWithContext,
@@ -50,6 +52,7 @@ function Root() {
           </Suspense>
         )}
       </div>
+      <Toaster />
     </CatchBoundary>
   );
 }
