@@ -20,9 +20,13 @@ import { ArrowLeft, Menu as MenuIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_protected")({
   beforeLoad: async () => {
-    const user = await account.get();
-    console.log(user);
-    if (!user) {
+    try {
+      const user = await account.get();
+      console.log(user);
+      if (!user) {
+        throw redirect({ to: "/login" });
+      }
+    } catch {
       throw redirect({ to: "/login" });
     }
   },
