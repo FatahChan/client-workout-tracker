@@ -10,7 +10,9 @@ function CardTile({
   className?: string;
 }) {
   return (
-    <Card className={cn("flex-grow min-w-36 aspect-square", className)}>
+    <Card
+      className={cn("flex-grow min-w-36 aspect-square max-w-96", className)}
+    >
       <CardContent className="p-4 pt-4 flex flex-col gap-2 justify-center items-center h-full">
         {children}
       </CardContent>

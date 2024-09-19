@@ -44,7 +44,7 @@ function ErrorBoundary({ reset }: { reset: () => void }) {
 function Root() {
   return (
     <CatchBoundary getResetKey={() => "reset"} errorComponent={ErrorBoundary}>
-      <div className="w-full px-2 py-4">
+      <div className="w-full px-2 py-4 md:px-16 md:py-16">
         <Outlet />
         {process.env.NODE_ENV === "development" && (
           <Suspense fallback={null}>

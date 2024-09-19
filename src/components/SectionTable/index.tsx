@@ -249,7 +249,7 @@ export function SectionTable({
   };
 
   return (
-    <div className="flex flex-col gap-2 border rounded-md p-4">
+    <div className="flex flex-col gap-2 border rounded-md p-4 md:min-w-96">
       <h3 className="text-xl font-bold">{section.name}</h3>
       {showEditExerciseForm ? (
         <EditExerciseForm />

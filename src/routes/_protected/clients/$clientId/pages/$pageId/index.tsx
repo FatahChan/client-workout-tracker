@@ -43,7 +43,7 @@ function AddSectionCard({ pageId }: { pageId: string }) {
     mutate();
   };
   return (
-    <CardTile className="w-full aspect-[5/1]">
+    <CardTile className="w-full aspect-[5/1] md:aspect-auto">
       {!showForm ? (
         <Button disabled={isPending} onClick={() => setShowForm(true)}>
           Add Section
@@ -91,14 +91,19 @@ function Page() {
     }`;
   }, [client?.name, page?.$createdAt, isLoading]);
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 md:justify-center md:items-center">
       <h1 className="text-2xl font-bold">{pageTitle}</h1>
       <AddSectionCard pageId={pageId} />
-      {page?.sections.map((section) => {
-        return (
-          <SectionTableWrappedWithContext key={section.$id} section={section} />
-        );
-      })}
+      <div className="flex flex-col gap-4 md:flex-row ">
+        {page?.sections.map((section) => {
+          return (
+            <SectionTableWrappedWithContext
+              key={section.$id}
+              section={section}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
