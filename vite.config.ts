@@ -19,9 +19,9 @@ export default defineConfig({
       },
 
       manifest: {
-        name: "test-pwa",
-        short_name: "test-pwa",
-        description: "Testing Pwa",
+        name: "Clients Workout Tracker",
+        short_name: "CWT",
+        description: "Track your clients workouts",
         theme_color: "#ffffff",
       },
 
