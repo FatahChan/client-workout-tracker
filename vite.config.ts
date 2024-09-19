@@ -11,12 +11,30 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      workbox: {
-        clientsClaim: true,
-        skipWaiting: true,
+      injectRegister: false,
+
+      pwaAssets: {
+        disabled: false,
+        config: true,
       },
+
+      manifest: {
+        name: "test-pwa",
+        short_name: "test-pwa",
+        description: "Testing Pwa",
+        theme_color: "#ffffff",
+      },
+
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+      },
+
       devOptions: {
-        enabled: true,
+        enabled: false,
+        navigateFallback: "index.html",
+        suppressWarnings: true,
         type: "module",
       },
     }),
