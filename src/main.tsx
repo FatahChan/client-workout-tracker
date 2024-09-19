@@ -19,6 +19,7 @@ const router = createRouter({
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
   },
+  defaultNotFoundComponent: () => <NotFound />,
 });
 
 // Register the router instance for type safety
