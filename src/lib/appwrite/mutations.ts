@@ -119,7 +119,6 @@ export async function updateExercise(
   if (!user) {
     throw new Error("User not found");
   }
-  console.log("updateExercise", exerciseId, name, sets, reps, weight);
   const exercise = await databases.updateDocument<ExerciseDocument>(
     APPWRITE_DATABASE_ID,
     APPWRITE_EXERCISES_COLLECTION_ID,

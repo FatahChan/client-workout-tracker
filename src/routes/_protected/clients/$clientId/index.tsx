@@ -33,7 +33,6 @@ function AddPageCard({ clientId }: { clientId: string }) {
   const { mutate, isPending } = useMutation({
     mutationFn: () => createPage(clientId),
     onSuccess: (page) => {
-      console.log(page);
       queryClient.invalidateQueries({ queryKey: [`client-${clientId}`] });
       navigate({
         to: "/clients/$clientId/pages/$pageId",

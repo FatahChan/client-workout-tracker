@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef, createColumnHelper, Row } from "@tanstack/react-table";
 import { Pencil, Trash } from "lucide-react";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { DataTable } from "../DataTable";
@@ -180,9 +179,7 @@ function EditExerciseForm() {
     setExerciseToEdit,
     setShowEditExerciseForm,
   } = useSectionTable();
-  useEffect(() => {
-    console.log("exerciseToEdit", exerciseToEdit);
-  }, [exerciseToEdit]);
+
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationFn: (data: z.infer<typeof exerciseFormSchema>) => {
@@ -210,7 +207,6 @@ function AddExerciseForm() {
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationFn: (data: z.infer<typeof exerciseFormSchema>) => {
-      console.log("sectionId", sectionId);
       return createExercise(
         sectionId,
         data.name,
@@ -220,8 +216,6 @@ function AddExerciseForm() {
       );
     },
     onSuccess: () => {
-      console.log("success");
-      console.log("sectionId", sectionId);
       queryClient.invalidateQueries({ queryKey: [`section-${sectionId}`] });
       setShowAddExerciseForm(false);
     },
