@@ -6,14 +6,14 @@ export const Route = createFileRoute("/login")({
   beforeLoad: async () => {
     try {
       const user = await account.get();
-      console.log(user);
       if (user) {
         throw redirect({ to: "/" });
       }
-    } catch (error) {
-      return { error };
+    } catch {
+      return { error: "Failed to get user" };
     }
   },
+
   component: LoginPage,
 });
 
