@@ -11,11 +11,13 @@ function ExerciseForm({
   onSubmit,
   submitButtonText = "Submit",
   className,
+  disabled = false,
 }: {
-  defaultValues: Exercise;
+  defaultValues?: Exercise;
   onSubmit: (data: Exercise) => void;
   submitButtonText?: string;
   className?: string;
+  disabled?: boolean;
 }) {
   const form = useForm<Exercise>({
     resolver: zodResolver(ExerciseSchema),
@@ -33,6 +35,7 @@ function ExerciseForm({
           name="name"
           placeholder="Exercise Name"
           label="Name"
+          disabled={disabled}
         />
         <TextInputField
           formControl={form.control}
@@ -40,6 +43,7 @@ function ExerciseForm({
           placeholder="Sets"
           label="Sets"
           type="number"
+          disabled={disabled}
         />
         <TextInputField
           formControl={form.control}
@@ -47,6 +51,7 @@ function ExerciseForm({
           placeholder="Reps"
           label="Reps"
           type="number"
+          disabled={disabled}
         />
         <TextInputField
           formControl={form.control}
@@ -54,9 +59,12 @@ function ExerciseForm({
           placeholder="Weight"
           label="Weight"
           type="number"
+          disabled={disabled}
         />
 
-        <Button type="submit">{submitButtonText}</Button>
+        <Button type="submit" disabled={disabled}>
+          {submitButtonText}
+        </Button>
       </form>
     </Form>
   );

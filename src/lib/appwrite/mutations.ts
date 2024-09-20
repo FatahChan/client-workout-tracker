@@ -10,8 +10,10 @@ import {
 } from ".";
 import {
   ClientDocument,
+  Exercise,
   ExerciseDocument,
   PageDocument,
+  Section,
   SectionDocument,
   User,
 } from "./types";
@@ -64,7 +66,7 @@ export async function createPage(clientId: string) {
   return page;
 }
 
-export async function createSection(pageId: string, name: string) {
+export async function createSection(pageId: string, data: Section) {
   const user = await account.get();
   if (!user) {
     throw new Error("User not found");
@@ -73,19 +75,13 @@ export async function createSection(pageId: string, name: string) {
     APPWRITE_DATABASE_ID,
     APPWRITE_SECTIONS_COLLECTION_ID,
     "unique()",
-    { page: pageId, name },
+    { page: pageId, ...data },
     getFullAccessCurrentUser(user)
   );
   return section;
 }
 
-export async function createExercise(
-  sectionId: string,
-  name: string,
-  sets: number,
-  reps?: number,
-  weight?: number
-) {
+export async function createExercise(sectionId: string, data: Exercise) {
   const user = await account.get();
   if (!user) {
     throw new Error("User not found");
@@ -96,25 +92,14 @@ export async function createExercise(
     "unique()",
     {
       section: sectionId,
-      name,
-      sets,
-      reps,
-      weight,
+      ...data,
     },
     getFullAccessCurrentUser(user)
   );
   return exercise;
 }
 
-export async function updateExercise(
-  exerciseId: string,
-  {
-    name,
-    sets,
-    reps,
-    weight,
-  }: { name: string; sets: number; reps: number; weight: number }
-) {
+export async function updateExercise(exerciseId: string, data: Exercise) {
   const user = await account.get();
   if (!user) {
     throw new Error("User not found");
@@ -123,13 +108,13 @@ export async function updateExercise(
     APPWRITE_DATABASE_ID,
     APPWRITE_EXERCISES_COLLECTION_ID,
     exerciseId,
-    { name, sets, reps, weight },
+    data,
     getFullAccessCurrentUser(user)
   );
   return exercise;
 }
 
-export async function updateSection(sectionId: string, name: string) {
+export async function updateSection(sectionId: string, data: Section) {
   const user = await account.get();
   if (!user) {
     throw new Error("User not found");
@@ -138,7 +123,7 @@ export async function updateSection(sectionId: string, name: string) {
     APPWRITE_DATABASE_ID,
     APPWRITE_SECTIONS_COLLECTION_ID,
     sectionId,
-    { name },
+    data,
     getFullAccessCurrentUser(user)
   );
   return section;

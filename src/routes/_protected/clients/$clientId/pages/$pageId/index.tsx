@@ -32,7 +32,7 @@ export const Route = createFileRoute(
 function AddSectionCard({ pageId }: { pageId: string }) {
   const queryClient = useQueryClient();
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: Section) => createSection(pageId, data.name),
+    mutationFn: (data: Section) => createSection(pageId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`page-${pageId}`] });
     },
