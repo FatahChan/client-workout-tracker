@@ -11,17 +11,17 @@ import { ExerciseDocument, SectionDocument } from "@/lib/appwrite/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef, createColumnHelper, Row } from "@tanstack/react-table";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { DataTable } from "../DataTable";
 import DestructiveDailogWarning from "../DestructiveDailogWarning";
+import DialogTemplate from "../DialogTamplate";
+import SectionForm from "../Forms/SectionForm";
 import TextInputField from "../TextInputField";
 import { Button } from "../ui/button";
 import { SectionTableProvider } from "./context";
 import { useSectionTable } from "./hook";
-import { useState } from "react";
-import { Input } from "../ui/input";
 
 const columnHelper = createColumnHelper<ExerciseDocument>();
 
@@ -195,8 +195,6 @@ export function SectionTableTitleHeader({
 }: {
   section: SectionDocument;
 }) {
-  const [editSectionName, setEditSectionName] = useState(false);
-  const [sectionName, setSectionName] = useState(section.name);
   const { exerciseToEdit } = useSectionTable();
   const queryClient = useQueryClient();
   const { mutate: deleteSectionMutation } = useMutation({
@@ -206,44 +204,47 @@ export function SectionTableTitleHeader({
     },
   });
   const { mutate: updateSectionMutation } = useMutation({
-    mutationFn: () => {
+    mutationFn: (data: { name: string }) => {
       if (!exerciseToEdit) {
         throw new Error("Exercise not found");
       }
-      return updateSection(exerciseToEdit.$id);
+      return updateSection(exerciseToEdit.$id, data.name);
     },
     onError: (error) => {
       console.error(error);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`section-${section.$id}`] });
-      setEditSectionName(false);
-      setSectionName(section.name);
     },
   });
 
   return (
-    <>
-      <div className="flex justify-between items-center">
-        <form onSubmit={() => updateSectionMutation()}>
-          <Input
-            className="text-xl font-bold"
-            value={sectionName}
-            onChange={(e) => setSectionName(e.target.value)}
-          />
-        </form>
-        <h3 className="text-xl font-bold">{section.name}</h3>
-        <div className="flex gap-2">
-          <Button size="sm">
-            <span className="sr-only">Edit Section</span>
-            <Pencil size={16} />
+    <div className="flex justify-between items-center">
+      <h3 className="text-xl font-bold">{section.name}</h3>
+      <div className="flex gap-2">
+        <DialogTemplate
+          trigger={
+            <Button size="sm">
+              <span className="sr-only">Edit Section</span>
+              <Pencil size={16} />
+            </Button>
+          }
+          content={
+            <SectionForm
+              onSubmit={updateSectionMutation}
+              submitButtonText="Update Section"
+              defaultValues={{ name: section.name }}
+            />
+          }
+        ></DialogTemplate>
+        <DestructiveDailogWarning onConfirm={() => deleteSectionMutation()}>
+          <Button variant="destructive" size="sm">
+            <span className="sr-only">Delete Section</span>
+            <Trash size={16} />
           </Button>
-          <DestructiveDailogWarning
-            onConfirm={() => deleteSectionMutation()}
-          ></DestructiveDailogWarning>
-        </div>
+        </DestructiveDailogWarning>
       </div>
-    </>
+    </div>
   );
 }
 export function SectionTable({

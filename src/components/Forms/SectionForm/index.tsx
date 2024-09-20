@@ -11,15 +11,19 @@ function SectionForm({
   onSubmit,
   submitButtonText = "Submit",
   className,
+  disabled = false,
 }: {
-  defaultValues: Section;
+  defaultValues?: Section;
   onSubmit: (data: Section) => void;
   submitButtonText?: string;
   className?: string;
+  disabled?: boolean;
 }) {
   const form = useForm<Section>({
     resolver: zodResolver(SectionSchema),
-    defaultValues: defaultValues,
+    defaultValues: defaultValues ?? {
+      name: "",
+    },
   });
 
   return (
@@ -33,8 +37,11 @@ function SectionForm({
           name="name"
           placeholder="Section Name"
           label="Name"
+          disabled={disabled}
         />
-        <Button type="submit">{submitButtonText}</Button>
+        <Button type="submit" disabled={disabled}>
+          {submitButtonText}
+        </Button>
       </form>
     </Form>
   );

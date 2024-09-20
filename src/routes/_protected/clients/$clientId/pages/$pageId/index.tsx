@@ -1,14 +1,16 @@
 import CardTile from "@/components/CardTile";
+import DialogTemplate from "@/components/DialogTamplate";
+import SectionForm from "@/components/Forms/SectionForm";
 import { SectionTableWrappedWithContext } from "@/components/SectionTable";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Spinner from "@/components/ui/spinner";
 import { createSection } from "@/lib/appwrite/mutations";
 import { getClient, getPage } from "@/lib/appwrite/queries";
+import { Section } from "@/lib/appwrite/types";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 export const Route = createFileRoute(
   "/_protected/clients/$clientId/pages/$pageId/"
@@ -28,44 +30,20 @@ export const Route = createFileRoute(
 });
 
 function AddSectionCard({ pageId }: { pageId: string }) {
-  const [name, setName] = useState("");
-  const [showForm, setShowForm] = useState(false);
   const queryClient = useQueryClient();
   const { mutate, isPending } = useMutation({
-    mutationFn: () => createSection(pageId, name),
+    mutationFn: (data: Section) => createSection(pageId, data.name),
     onSuccess: () => {
-      setShowForm(false);
-      setName("");
       queryClient.invalidateQueries({ queryKey: [`page-${pageId}`] });
     },
   });
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    mutate();
-  };
   return (
-    <CardTile
-      className={cn("w-full aspect-[5/1] md:aspect-auto", {
-        "aspect-auto": showForm,
-      })}
-    >
-      {!showForm ? (
-        <Button disabled={isPending} onClick={() => setShowForm(true)}>
-          Add Section
-        </Button>
-      ) : (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-          <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <Button type="submit" disabled={isPending}>
-            Add Section
-          </Button>
-          <Button onClick={() => setShowForm(false)}>Cancel</Button>
-        </form>
-      )}
+    <CardTile className={cn("w-full aspect-[5/1] md:aspect-auto")}>
+      <DialogTemplate
+        trigger={<Button>Add Section</Button>}
+        content={<SectionForm onSubmit={mutate} disabled={isPending} />}
+      />
+      ∏
     </CardTile>
   );
 }
