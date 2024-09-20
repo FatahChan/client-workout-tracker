@@ -9,6 +9,7 @@ import {
   databases,
 } from ".";
 import {
+  Client,
   ClientDocument,
   Exercise,
   ExerciseDocument,
@@ -129,6 +130,21 @@ export async function updateSection(sectionId: string, data: Section) {
   return section;
 }
 
+export async function updateClient(clientId: string, data: Client) {
+  const user = await account.get();
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const client = await databases.updateDocument<ClientDocument>(
+    APPWRITE_DATABASE_ID,
+    APPWRITE_CLIENTS_COLLECTION_ID,
+    clientId,
+    data,
+    getFullAccessCurrentUser(user)
+  );
+  return client;
+}
+
 export async function deleteExercise(exerciseId: string) {
   const user = await account.get();
   if (!user) {
@@ -150,5 +166,29 @@ export async function deleteSection(sectionId: string) {
     APPWRITE_DATABASE_ID,
     APPWRITE_SECTIONS_COLLECTION_ID,
     sectionId
+  );
+}
+
+export async function deletePage(pageId: string) {
+  const user = await account.get();
+  if (!user) {
+    throw new Error("User not found");
+  }
+  await databases.deleteDocument(
+    APPWRITE_DATABASE_ID,
+    APPWRITE_PAGES_COLLECTION_ID,
+    pageId
+  );
+}
+
+export async function deleteClient(clientId: string) {
+  const user = await account.get();
+  if (!user) {
+    throw new Error("User not found");
+  }
+  await databases.deleteDocument(
+    APPWRITE_DATABASE_ID,
+    APPWRITE_CLIENTS_COLLECTION_ID,
+    clientId
   );
 }

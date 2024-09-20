@@ -43,7 +43,6 @@ function AddSectionCard({ pageId }: { pageId: string }) {
         trigger={<Button>Add Section</Button>}
         content={<SectionForm onSubmit={mutate} disabled={isPending} />}
       />
-      ∏
     </CardTile>
   );
 }

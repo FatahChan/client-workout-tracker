@@ -25,14 +25,12 @@ function DestructiveDailogWarning({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="destructive" className="p-2 w-8 h-8">
-          {children || (
-            <>
-              <span className="sr-only">Delete</span>
-              <Trash />
-            </>
-          )}
-        </Button>
+        {children || (
+          <Button variant="destructive" className="p-2 w-8 h-8">
+            <span className="sr-only">Delete</span>
+            <Trash />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="rounded-md">
         <DialogHeader>

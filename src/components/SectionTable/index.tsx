@@ -1,153 +1,34 @@
-import {
-  createExercise,
-  deleteExercise,
-  deleteSection,
-  updateExercise,
-  updateSection,
-} from "@/lib/appwrite/mutations";
+import { deleteSection, updateSection } from "@/lib/appwrite/mutations";
 import { getSection } from "@/lib/appwrite/queries";
-import {
-  Exercise,
-  ExerciseDocument,
-  SectionDocument,
-} from "@/lib/appwrite/types";
+import { ExerciseDocument, SectionDocument } from "@/lib/appwrite/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "@tanstack/react-router";
 import { ColumnDef, createColumnHelper, Row } from "@tanstack/react-table";
-import { Pencil, Plus, Trash } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 import { DataTable } from "../DataTable";
 import DestructiveDailogWarning from "../DestructiveDailogWarning";
 import DialogTemplate from "../DialogTamplate";
-import ExerciseForm from "../Forms/ExerciseForm";
 import SectionForm from "../Forms/SectionForm";
 import { Button } from "../ui/button";
 import { SectionTableProvider } from "./context";
 import { useSectionTable } from "./hook";
+import {
+  AddExerciseDialog,
+  EditExerciseDialog,
+  DeleteExerciseDailog,
+} from "./dialogs";
 
-const columnHelper = createColumnHelper<ExerciseDocument>();
-
-function DeleteExerciseDailog({ exercise }: { exercise: ExerciseDocument }) {
-  const { sectionId } = useSectionTable();
-  const queryClient = useQueryClient();
-  const { mutate } = useMutation({
-    mutationFn: () => deleteExercise(exercise.$id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`section-${sectionId}`] });
-    },
+function SectionTableTitleHeader({ section }: { section: SectionDocument }) {
+  const { pageId } = useParams({
+    from: "/_protected/clients/$clientId/pages/$pageId/",
   });
-  return <DestructiveDailogWarning onConfirm={mutate} />;
-}
-function ActionsCell({ row }: { row: Row<ExerciseDocument> }) {
-  return (
-    <div className="flex gap-2 flex-col justify-center items-center">
-      <Button className="p-2 w-8 h-8">
-        <span className="sr-only">Edit Exercise</span>
-        <Pencil />
-      </Button>
-      <EditExerciseDialog
-        exercise={row.original}
-        trigger={
-          <Button className="p-2 w-8 h-8">
-            <span className="sr-only">Edit Exercise</span>
-            <Pencil />
-          </Button>
-        }
-      />
-
-      <DeleteExerciseDailog exercise={row.original} />
-    </div>
-  );
-}
-const columns: ColumnDef<ExerciseDocument>[] = [
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "sets",
-    header: "Sets",
-  },
-  {
-    accessorKey: "reps",
-    header: "Reps",
-  },
-  {
-    accessorKey: "weight",
-    header: "Weight",
-  },
-  columnHelper.display({
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => <ActionsCell row={row} />,
-  }),
-];
-
-function EditExerciseDialog({
-  exercise,
-  trigger,
-}: {
-  exercise: ExerciseDocument;
-  trigger?: React.ReactNode;
-}) {
-  const { sectionId } = useSectionTable();
-  const queryClient = useQueryClient();
-  const { mutate } = useMutation({
-    mutationFn: (data: Exercise) => {
-      if (!exercise) {
-        throw new Error("Exercise not found");
-      }
-      return updateExercise(exercise.$id, data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`section-${sectionId}`] });
-    },
-    onError: (error) => {
-      console.error(error);
-    },
-  });
-  return (
-    <DialogTemplate
-      trigger={trigger ?? <Button>Edit Exercise</Button>}
-      content={<ExerciseForm defaultValues={exercise} onSubmit={mutate} />}
-    />
-  );
-}
-
-function AddExerciseDialog() {
-  const { sectionId, setShowAddExerciseForm } = useSectionTable();
-  const queryClient = useQueryClient();
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data: Exercise) => {
-      return createExercise(sectionId, data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`section-${sectionId}`] });
-      setShowAddExerciseForm(false);
-    },
-  });
-  return (
-    <DialogTemplate
-      trigger={
-        <Button className="w-full">
-          <span className="sr-only">Add Exercise</span>
-          <Plus />
-        </Button>
-      }
-      content={<ExerciseForm onSubmit={mutate} disabled={isPending} />}
-    />
-  );
-}
-
-export function SectionTableTitleHeader({
-  section,
-}: {
-  section: SectionDocument;
-}) {
   const { exerciseToEdit } = useSectionTable();
   const queryClient = useQueryClient();
   const { mutate: deleteSectionMutation } = useMutation({
     mutationFn: () => deleteSection(section.$id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`section-${section.$id}`] });
+      queryClient.invalidateQueries({ queryKey: [`page-${pageId}`] });
     },
   });
   const { mutate: updateSectionMutation } = useMutation({
@@ -194,7 +75,55 @@ export function SectionTableTitleHeader({
     </div>
   );
 }
-export function SectionTable({
+
+function ActionsCell({ row }: { row: Row<ExerciseDocument> }) {
+  return (
+    <div className="flex gap-2 flex-col justify-center items-center">
+      <Button className="p-2 w-8 h-8">
+        <span className="sr-only">Edit Exercise</span>
+        <Pencil />
+      </Button>
+      <EditExerciseDialog
+        exercise={row.original}
+        trigger={
+          <Button className="p-2 w-8 h-8">
+            <span className="sr-only">Edit Exercise</span>
+            <Pencil />
+          </Button>
+        }
+      />
+
+      <DeleteExerciseDailog exercise={row.original} />
+    </div>
+  );
+}
+const columnHelper = createColumnHelper<ExerciseDocument>();
+
+const columns: ColumnDef<ExerciseDocument>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "sets",
+    header: "Sets",
+  },
+  {
+    accessorKey: "reps",
+    header: "Reps",
+  },
+  {
+    accessorKey: "weight",
+    header: "Weight",
+  },
+  columnHelper.display({
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => <ActionsCell row={row} />,
+  }),
+];
+
+function SectionTable({
   section: IntialSectionData,
 }: {
   section: SectionDocument;
