@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import Spinner from "@/components/ui/spinner";
 import { createSection } from "@/lib/appwrite/mutations";
 import { getClient, getPage } from "@/lib/appwrite/queries";
+import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
@@ -43,7 +44,11 @@ function AddSectionCard({ pageId }: { pageId: string }) {
     mutate();
   };
   return (
-    <CardTile className="w-full aspect-[5/1] md:aspect-auto">
+    <CardTile
+      className={cn("w-full aspect-[5/1] md:aspect-auto", {
+        "aspect-auto": showForm,
+      })}
+    >
       {!showForm ? (
         <Button disabled={isPending} onClick={() => setShowForm(true)}>
           Add Section
@@ -94,7 +99,7 @@ function Page() {
     <div className="flex flex-col gap-4 md:justify-center md:items-center">
       <h1 className="text-2xl font-bold">{pageTitle}</h1>
       <AddSectionCard pageId={pageId} />
-      <div className="flex flex-col gap-4 md:flex-row ">
+      <div className="flex flex-wrap flex-col gap-4 md:flex-row justify-center items-center ">
         {page?.sections.map((section) => {
           return (
             <SectionTableWrappedWithContext

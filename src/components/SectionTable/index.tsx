@@ -2,31 +2,26 @@ import { Form } from "@/components/ui/form";
 import {
   createExercise,
   deleteExercise,
+  deleteSection,
   updateExercise,
+  updateSection,
 } from "@/lib/appwrite/mutations";
 import { getSection } from "@/lib/appwrite/queries";
 import { ExerciseDocument, SectionDocument } from "@/lib/appwrite/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef, createColumnHelper, Row } from "@tanstack/react-table";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { DataTable } from "../DataTable";
+import DestructiveDailogWarning from "../DestructiveDailogWarning";
 import TextInputField from "../TextInputField";
 import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
 import { SectionTableProvider } from "./context";
 import { useSectionTable } from "./hook";
+import { useState } from "react";
+import { Input } from "../ui/input";
 
 const columnHelper = createColumnHelper<ExerciseDocument>();
 
@@ -39,35 +34,7 @@ function DeleteExerciseDailog({ exercise }: { exercise: ExerciseDocument }) {
       queryClient.invalidateQueries({ queryKey: [`section-${sectionId}`] });
     },
   });
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="destructive" className="p-2 w-8 h-8">
-          <span className="sr-only">Delete Exercise</span>
-          <Trash />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="rounded-md">
-        <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="flex gap-2">
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-          <DialogClose asChild>
-            <Button variant="destructive" onClick={() => mutate()}>
-              Delete
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
+  return <DestructiveDailogWarning onConfirm={mutate} />;
 }
 function ActionsCell({ row }: { row: Row<ExerciseDocument> }) {
   const { setExerciseToEdit, setShowEditExerciseForm } = useSectionTable();
@@ -222,6 +189,63 @@ function AddExerciseForm() {
   });
   return <ExerciseForm onSubmit={mutate} />;
 }
+
+export function SectionTableTitleHeader({
+  section,
+}: {
+  section: SectionDocument;
+}) {
+  const [editSectionName, setEditSectionName] = useState(false);
+  const [sectionName, setSectionName] = useState(section.name);
+  const { exerciseToEdit } = useSectionTable();
+  const queryClient = useQueryClient();
+  const { mutate: deleteSectionMutation } = useMutation({
+    mutationFn: () => deleteSection(section.$id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`section-${section.$id}`] });
+    },
+  });
+  const { mutate: updateSectionMutation } = useMutation({
+    mutationFn: () => {
+      if (!exerciseToEdit) {
+        throw new Error("Exercise not found");
+      }
+      return updateSection(exerciseToEdit.$id);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`section-${section.$id}`] });
+      setEditSectionName(false);
+      setSectionName(section.name);
+    },
+  });
+
+  return (
+    <>
+      <div className="flex justify-between items-center">
+        <form onSubmit={() => updateSectionMutation()}>
+          <Input
+            className="text-xl font-bold"
+            value={sectionName}
+            onChange={(e) => setSectionName(e.target.value)}
+          />
+        </form>
+        <h3 className="text-xl font-bold">{section.name}</h3>
+        <div className="flex gap-2">
+          <Button size="sm">
+            <span className="sr-only">Edit Section</span>
+            <Pencil size={16} />
+          </Button>
+          <DestructiveDailogWarning
+            onConfirm={() => deleteSectionMutation()}
+          ></DestructiveDailogWarning>
+        </div>
+      </div>
+    </>
+  );
+}
 export function SectionTable({
   section: IntialSectionData,
 }: {
@@ -250,7 +274,7 @@ export function SectionTable({
 
   return (
     <div className="flex flex-col gap-2 border rounded-md p-4 md:min-w-96">
-      <h3 className="text-xl font-bold">{section.name}</h3>
+      <SectionTableTitleHeader section={section} />
       {showEditExerciseForm ? (
         <EditExerciseForm />
       ) : showAddExerciseForm ? (

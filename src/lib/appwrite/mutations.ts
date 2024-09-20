@@ -129,6 +129,21 @@ export async function updateExercise(
   return exercise;
 }
 
+export async function updateSection(sectionId: string, name: string) {
+  const user = await account.get();
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const section = await databases.updateDocument<SectionDocument>(
+    APPWRITE_DATABASE_ID,
+    APPWRITE_SECTIONS_COLLECTION_ID,
+    sectionId,
+    { name },
+    getFullAccessCurrentUser(user)
+  );
+  return section;
+}
+
 export async function deleteExercise(exerciseId: string) {
   const user = await account.get();
   if (!user) {
@@ -138,5 +153,17 @@ export async function deleteExercise(exerciseId: string) {
     APPWRITE_DATABASE_ID,
     APPWRITE_EXERCISES_COLLECTION_ID,
     exerciseId
+  );
+}
+
+export async function deleteSection(sectionId: string) {
+  const user = await account.get();
+  if (!user) {
+    throw new Error("User not found");
+  }
+  await databases.deleteDocument(
+    APPWRITE_DATABASE_ID,
+    APPWRITE_SECTIONS_COLLECTION_ID,
+    sectionId
   );
 }
