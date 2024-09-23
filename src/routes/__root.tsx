@@ -9,6 +9,7 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect } from "react";
+import ReloadPrompt from "@/components/ReloadPrompt";
 
 const TanStackRouterDevtools = lazy(() =>
   import("@tanstack/router-devtools").then(({ TanStackRouterDevtools }) => ({
@@ -52,6 +53,7 @@ function Root() {
           </Suspense>
         )}
       </div>
+      <ReloadPrompt />
       <Toaster />
     </CatchBoundary>
   );

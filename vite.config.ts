@@ -11,6 +11,7 @@ export default defineConfig({
     TanStackRouterVite(),
     react(),
     VitePWA({
+      includeAssets: ["**/*"],
       registerType: "autoUpdate",
       injectRegister: false,
 
