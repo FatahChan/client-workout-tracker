@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import TextInputField from "../TextInputField";
-import OtpField from "../OtpField";
+import TextInputField from "@/components/TextInputField";
+import OtpField from "@/components/OtpField";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { account } from "@/lib/appwrite";
