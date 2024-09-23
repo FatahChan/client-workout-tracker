@@ -11,6 +11,7 @@ import { Plus } from "lucide-react";
 import DialogTemplate from "../DialogTamplate";
 import ExerciseForm from "../Forms/ExerciseForm";
 import { Button } from "../ui/button";
+import { useState } from "react";
 
 function EditExerciseDialog({
   exercise,
@@ -19,9 +20,10 @@ function EditExerciseDialog({
   exercise: ExerciseDocument;
   trigger?: React.ReactNode;
 }) {
+  const [open, setOpen] = useState(false);
   const { sectionId } = useSectionTable();
   const queryClient = useQueryClient();
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (data: Exercise) => {
       if (!exercise) {
         throw new Error("Exercise not found");
@@ -30,6 +32,7 @@ function EditExerciseDialog({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`section-${sectionId}`] });
+      setOpen(false);
     },
     onError: (error) => {
       console.error(error);
@@ -37,14 +40,17 @@ function EditExerciseDialog({
   });
   return (
     <DialogTemplate
-      trigger={trigger ?? <Button>Edit Exercise</Button>}
+      trigger={trigger ?? <Button disabled={isPending}>Edit Exercise</Button>}
       content={<ExerciseForm defaultValues={exercise} onSubmit={mutate} />}
+      open={open}
+      setOpen={setOpen}
     />
   );
 }
 
 function AddExerciseDialog() {
-  const { sectionId, setShowAddExerciseForm } = useSectionTable();
+  const [open, setOpen] = useState(false);
+  const { sectionId } = useSectionTable();
   const queryClient = useQueryClient();
   const { mutate, isPending } = useMutation({
     mutationFn: (data: Exercise) => {
@@ -52,11 +58,13 @@ function AddExerciseDialog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`section-${sectionId}`] });
-      setShowAddExerciseForm(false);
+      setOpen(false);
     },
   });
   return (
     <DialogTemplate
+      open={open}
+      setOpen={setOpen}
       trigger={
         <Button className="w-full">
           <span className="sr-only">Add Exercise</span>

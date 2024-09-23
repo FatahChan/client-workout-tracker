@@ -3,6 +3,7 @@ import DestructiveDailogWarning from "@/components/DestructiveDailogWarning";
 import DialogTemplate from "@/components/DialogTamplate";
 import ClientForm from "@/components/Forms/ClientForm";
 import { Button } from "@/components/ui/button";
+import { DialogClose } from "@/components/ui/dialog";
 import {
   TableHeader,
   TableRow,
@@ -26,6 +27,7 @@ import {
 } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Pencil, Trash } from "lucide-react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_protected/clients/$clientId/")({
   loader: ({ context: { queryClient }, params: { clientId } }) => {
@@ -84,7 +86,7 @@ function PageCard({
           className="p-2 w-8 h-8 absolute top-2 right-2"
         >
           <span className="sr-only">Delete</span>
-          <Trash />
+          <Trash size={16} />
         </Button>
       </DestructiveDailogWarning>
       <Button variant={"ghost"} asChild>
@@ -109,35 +111,48 @@ function PageCard({
 
 function ActionsCell({ clientDocument }: { clientDocument: ClientDocument }) {
   const queryClient = useQueryClient();
+  const [openForm, setOpenForm] = useState(false);
+  const navigate = useNavigate();
   const { mutate: deleteClientMutate } = useMutation({
     mutationFn: () => deleteClient(clientDocument.$id),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [`client-${clientDocument.$id}`],
       });
+      navigate({ to: "/clients" });
     },
   });
   const { mutate: updateClientMutate } = useMutation({
     mutationFn: (client: Client) => updateClient(clientDocument.$id, client),
     onSuccess: () => {
+      setOpenForm(false);
       queryClient.invalidateQueries({
         queryKey: [`client-${clientDocument.$id}`],
       });
     },
   });
   return (
-    <div>
+    <div className="flex gap-2 justify-center items-center">
       <DialogTemplate
+        open={openForm}
+        setOpen={setOpenForm}
         trigger={
-          <Button>
+          <Button size="sm" className="p-2 w-8 h-8">
             <span className="sr-only">Edit Client</span>
-            <Pencil />
+            <Pencil size={16} />
           </Button>
         }
+        title="Edit Client"
+        description={`Edit information about ${clientDocument.name}`}
         content={
           <ClientForm
             defaultValues={clientDocument}
             onSubmit={updateClientMutate}
+            submitButton={
+              <DialogClose asChild>
+                <Button>Save</Button>
+              </DialogClose>
+            }
           />
         }
       />

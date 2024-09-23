@@ -7,9 +7,9 @@ export type DocumentList<T extends Document<unknown>> = Models.DocumentList<T>;
 
 export const ExerciseSchema = z.object({
   name: z.string(),
-  sets: z.number(),
-  reps: z.number().optional(),
-  weight: z.number().optional(),
+  sets: z.coerce.number(),
+  reps: z.coerce.number().optional(),
+  weight: z.coerce.number().optional(),
 });
 
 export const SectionSchema = z.object({
@@ -18,7 +18,7 @@ export const SectionSchema = z.object({
 
 export const ClientSchema = z.object({
   name: z.string(),
-  age: z.number().optional(),
+  age: z.coerce.number().optional(),
   bodyType: z.string().optional(),
   goal: z.string().optional(),
 });

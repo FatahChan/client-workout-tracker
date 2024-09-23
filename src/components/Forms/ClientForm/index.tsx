@@ -7,14 +7,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 function ClientForm({
-  defaultValues,
+  defaultValues = {
+    name: "",
+    age: 0,
+    bodyType: "",
+    goal: "",
+  },
   onSubmit,
-  submitButtonText = "Submit",
+  submitButton,
   className,
 }: {
-  defaultValues: Client;
+  defaultValues?: Client;
   onSubmit: (data: Client) => void;
-  submitButtonText?: string;
+  submitButton?: React.ReactNode;
   className?: string;
 }) {
   const form = useForm<Client>({
@@ -54,7 +59,7 @@ function ClientForm({
           label="Goal"
         />
 
-        <Button type="submit">{submitButtonText}</Button>
+        {submitButton ? submitButton : <Button type="submit">Submit</Button>}
       </form>
     </Form>
   );

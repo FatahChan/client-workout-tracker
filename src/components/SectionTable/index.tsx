@@ -5,24 +5,24 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { ColumnDef, createColumnHelper, Row } from "@tanstack/react-table";
 import { Pencil, Trash } from "lucide-react";
+import { useState } from "react";
 import { DataTable } from "../DataTable";
 import DestructiveDailogWarning from "../DestructiveDailogWarning";
 import DialogTemplate from "../DialogTamplate";
 import SectionForm from "../Forms/SectionForm";
 import { Button } from "../ui/button";
 import { SectionTableProvider } from "./context";
-import { useSectionTable } from "./hook";
 import {
   AddExerciseDialog,
-  EditExerciseDialog,
   DeleteExerciseDailog,
+  EditExerciseDialog,
 } from "./dialogs";
 
 function SectionTableTitleHeader({ section }: { section: SectionDocument }) {
   const { pageId } = useParams({
     from: "/_protected/clients/$clientId/pages/$pageId/",
   });
-  const { exerciseToEdit } = useSectionTable();
+  const [openForm, setOpenForm] = useState(false);
   const queryClient = useQueryClient();
   const { mutate: deleteSectionMutation } = useMutation({
     mutationFn: () => deleteSection(section.$id),
@@ -33,15 +33,13 @@ function SectionTableTitleHeader({ section }: { section: SectionDocument }) {
   });
   const { mutate: updateSectionMutation } = useMutation({
     mutationFn: (data: { name: string }) => {
-      if (!exerciseToEdit) {
-        throw new Error("Exercise not found");
-      }
-      return updateSection(exerciseToEdit.$id, data);
+      return updateSection(section.$id, data);
     },
     onError: (error) => {
       console.error(error);
     },
     onSuccess: () => {
+      setOpenForm(false);
       queryClient.invalidateQueries({ queryKey: [`section-${section.$id}`] });
     },
   });
@@ -51,6 +49,8 @@ function SectionTableTitleHeader({ section }: { section: SectionDocument }) {
       <h3 className="text-xl font-bold">{section.name}</h3>
       <div className="flex gap-2">
         <DialogTemplate
+          open={openForm}
+          setOpen={setOpenForm}
           trigger={
             <Button size="sm">
               <span className="sr-only">Edit Section</span>
@@ -79,10 +79,6 @@ function SectionTableTitleHeader({ section }: { section: SectionDocument }) {
 function ActionsCell({ row }: { row: Row<ExerciseDocument> }) {
   return (
     <div className="flex gap-2 flex-col justify-center items-center">
-      <Button className="p-2 w-8 h-8">
-        <span className="sr-only">Edit Exercise</span>
-        <Pencil />
-      </Button>
       <EditExerciseDialog
         exercise={row.original}
         trigger={

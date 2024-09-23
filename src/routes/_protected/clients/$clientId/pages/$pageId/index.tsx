@@ -10,7 +10,7 @@ import { Section } from "@/lib/appwrite/types";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 export const Route = createFileRoute(
   "/_protected/clients/$clientId/pages/$pageId/"
@@ -30,16 +30,20 @@ export const Route = createFileRoute(
 });
 
 function AddSectionCard({ pageId }: { pageId: string }) {
+  const [openForm, setOpenForm] = useState(false);
   const queryClient = useQueryClient();
   const { mutate, isPending } = useMutation({
     mutationFn: (data: Section) => createSection(pageId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`page-${pageId}`] });
+      setOpenForm(false);
     },
   });
   return (
     <CardTile className={cn("w-full aspect-[5/1] md:aspect-auto")}>
       <DialogTemplate
+        open={openForm}
+        setOpen={setOpenForm}
         trigger={<Button>Add Section</Button>}
         content={<SectionForm onSubmit={mutate} disabled={isPending} />}
       />
@@ -73,7 +77,7 @@ function Page() {
     }`;
   }, [client?.name, page?.$createdAt, isLoading]);
   return (
-    <div className="flex flex-col gap-4 md:justify-center md:items-center">
+    <div className="flex flex-col gap-4 justify-center items-center">
       <h1 className="text-2xl font-bold">{pageTitle}</h1>
       <AddSectionCard pageId={pageId} />
       <div className="flex flex-wrap flex-col gap-4 md:flex-row justify-center items-center ">

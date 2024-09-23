@@ -27,12 +27,7 @@ const getFullAccessCurrentUser = (user: User) => {
     Permission.delete(Role.user(user.$id)),
   ];
 };
-export async function createClient(
-  name: string,
-  age: number,
-  bodyType: string,
-  goal: string
-) {
+export async function createClient(data: Client) {
   const user = await account.get();
   if (!user) {
     throw new Error("User not found");
@@ -41,12 +36,7 @@ export async function createClient(
     APPWRITE_DATABASE_ID,
     APPWRITE_CLIENTS_COLLECTION_ID,
     "unique()",
-    {
-      name,
-      age,
-      bodyType,
-      goal,
-    },
+    data,
     getFullAccessCurrentUser(user)
   );
   return client;
