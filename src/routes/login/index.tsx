@@ -24,7 +24,7 @@ export const Route = createFileRoute("/login/")({
       ) {
         throw redirect({ to: "/" });
       }
-      throw error;
+      return;
     }
   },
   component: () => <LoginPage />,
