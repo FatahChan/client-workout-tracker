@@ -18,13 +18,18 @@ export const Route = createFileRoute("/login/")({
         throw new Error("User is already logged in");
       }
     } catch (error) {
-      if (
-        error instanceof Error &&
-        error.message === "User is already logged in"
-      ) {
-        throw redirect({ to: "/" });
+      console.log(error);
+      if (error instanceof Error) {
+        switch (error.message) {
+          case "User is already logged in":
+            throw redirect({ to: "/" });
+          case "User is not logged in":
+            return;
+          default:
+            throw error;
+        }
       }
-      return;
+      return error;
     }
   },
   component: () => <LoginPage />,
