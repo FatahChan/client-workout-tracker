@@ -1,9 +1,9 @@
-import CardTile from "@/components/CardTile";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import CardTile from '@/components/CardTile'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
-export const Route = createFileRoute("/_protected/")({
+export const Route = createFileRoute('/_layout/')({
   component: Dashboard,
-});
+})
 
 function Dashboard() {
   return (
@@ -14,5 +14,5 @@ function Dashboard() {
         </CardTile>
       </Link>
     </>
-  );
+  )
 }

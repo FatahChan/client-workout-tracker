@@ -23,17 +23,37 @@ export const Route = createRootRouteWithContext<{
   component: () => <Root />,
 });
 
-function ErrorBoundary({ reset }: { reset: () => void }) {
+function ErrorBoundary({
+  reset,
+  error,
+}: {
+  reset: () => void;
+  error: unknown;
+}) {
   const router = useRouter();
   useEffect(() => {
     reset();
   }, [reset]);
+  const formattedError = (() => {
+    if (error instanceof Error) {
+      return error.message;
+    }
+    switch (typeof error) {
+      case "string":
+        return error;
+      case "object":
+        return JSON.stringify(error);
+      default:
+        return "An unknown error occurred";
+    }
+  })();
+
   return (
     <div className="w-screen h-screen flex flex-col gap-4  justify-center items-center">
-      <h1>Something went wrong </h1>
+      <h1>{formattedError}</h1>
       <Button
         onClick={() => {
-          router.navigate({ to: "/" });
+          router.navigate({ to: "/clients" });
         }}
       >
         Go Home

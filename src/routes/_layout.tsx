@@ -8,7 +8,6 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 import { account } from "@/lib/appwrite";
-import { checkIfUserIsLoggedIn } from "@/lib/appwrite/util";
 import { useMutation } from "@tanstack/react-query";
 import {
   createFileRoute,
@@ -19,17 +18,7 @@ import {
 } from "@tanstack/react-router";
 import { ArrowLeft, Menu as MenuIcon } from "lucide-react";
 
-export const Route = createFileRoute("/_protected")({
-  beforeLoad: async () => {
-    try {
-      const user = await checkIfUserIsLoggedIn();
-      if (!user?.$id) {
-        throw redirect({ to: "/login" });
-      }
-    } catch {
-      throw redirect({ to: "/login" });
-    }
-  },
+export const Route = createFileRoute("/_layout")({
   component: Layout,
 });
 
@@ -54,15 +43,12 @@ function Menu() {
           <SheetTitle>Clients Workout Tracker App</SheetTitle>
         </SheetHeader>
         <div className="flex flex-col gap-4 my-4">
-          <Link to="/" className="underline">
+          <Link to="/clients" className="underline">
             Home
           </Link>
           <Link to="/clients" className="underline">
             Clients
           </Link>
-          <span className="text-xl text-muted-foreground font-bold">
-            Recents
-          </span>
         </div>
         <SheetFooter>
           <Button onClick={() => logout()} variant={"destructive"}>
@@ -94,7 +80,7 @@ function Layout() {
         </div>
       </nav>
       <hr className="my-4" />
-      <Outlet />,
+      <Outlet />
     </>
   );
 }

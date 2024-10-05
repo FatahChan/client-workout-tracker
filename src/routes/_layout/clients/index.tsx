@@ -1,6 +1,6 @@
-import CardTile from "@/components/CardTile";
-import ClientForm from "@/components/Forms/ClientForm";
-import { Button } from "@/components/ui/button";
+import CardTile from '@/components/CardTile'
+import ClientForm from '@/components/Forms/ClientForm'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -8,38 +8,38 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { createClient } from "@/lib/appwrite/mutations";
-import { listClients } from "@/lib/appwrite/queries";
-import { Client } from "@/lib/appwrite/types";
+} from '@/components/ui/dialog'
+import { createClient } from '@/lib/appwrite/mutations'
+import { listClients } from '@/lib/appwrite/queries'
+import { Client } from '@/lib/appwrite/types'
 import {
   useMutation,
   useQueryClient,
   useSuspenseQuery,
-} from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+} from '@tanstack/react-query'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
-export const Route = createFileRoute("/_protected/clients/")({
+export const Route = createFileRoute('/_layout/clients/')({
   loader: ({ context: { queryClient } }) => {
     queryClient.ensureQueryData({
-      queryKey: ["clients"],
+      queryKey: ['clients'],
       queryFn: () => listClients(),
-    });
+    })
   },
   component: ClientsPage,
-});
+})
 
 function AddClientButton() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   const { mutate } = useMutation({
     mutationFn: (data: Client) => createClient(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["clients"] });
+      queryClient.invalidateQueries({ queryKey: ['clients'] })
     },
     onError: (error) => {
-      console.error("Error creating client", error);
+      console.error('Error creating client', error)
     },
-  });
+  })
 
   return (
     <Dialog>
@@ -58,14 +58,14 @@ function AddClientButton() {
         <ClientForm onSubmit={mutate} />
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
 function ClientsPage() {
   const { data } = useSuspenseQuery({
-    queryKey: ["clients"],
+    queryKey: ['clients'],
     queryFn: () => listClients(),
-  });
+  })
 
   return (
     <>
@@ -75,7 +75,7 @@ function ClientsPage() {
         {data?.documents.map((client) => (
           <CardTile key={client.$id}>
             <Button
-              variant={"ghost"}
+              variant={'ghost'}
               asChild
               className="w-full h-full flex justify-center items-center"
             >
@@ -87,5 +87,5 @@ function ClientsPage() {
         ))}
       </div>
     </>
-  );
+  )
 }
