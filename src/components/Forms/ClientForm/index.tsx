@@ -36,7 +36,7 @@ function ClientForm({
         <TextInputField
           formControl={form.control}
           name="name"
-          placeholder="Exercise Name"
+          placeholder="Name"
           label="Name"
         />
         <TextInputField
