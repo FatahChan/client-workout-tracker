@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { createClient } from "@/lib/RxDb/mutations";
 import { listClients } from "@/lib/RxDb/queries";
-import { Client } from "@/lib/appwrite/types";
+import { ClientZodSchemaType } from "@/schema/client";
 import {
   useMutation,
   useQueryClient,
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_layout/clients/")({
 function AddClientButton() {
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
-    mutationFn: (data: Client) => createClient(data),
+    mutationFn: (data: ClientZodSchemaType) => createClient(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
     },

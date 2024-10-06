@@ -6,3 +6,5 @@ export const zodClientSchema = z.object({
   bodyType: z.string().max(32).optional(),
   goal: z.string().max(32).optional(),
 });
+
+export type ClientZodSchemaType = z.infer<typeof zodClientSchema>;

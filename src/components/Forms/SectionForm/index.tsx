@@ -1,8 +1,8 @@
 import TextInputField from "@/components/TextInputField";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { Section, SectionSchema } from "@/lib/appwrite/types";
 import { cn } from "@/lib/utils";
+import { SectionZodSchemaType, zodSectionSchema } from "@/schema/section";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -13,14 +13,14 @@ function SectionForm({
   className,
   disabled = false,
 }: {
-  defaultValues?: Section;
-  onSubmit: (data: Section) => void;
+  defaultValues?: Partial<SectionZodSchemaType>;
+  onSubmit: (data: SectionZodSchemaType) => void;
   submitButtonText?: string;
   className?: string;
   disabled?: boolean;
 }) {
-  const form = useForm<Section>({
-    resolver: zodResolver(SectionSchema),
+  const form = useForm<SectionZodSchemaType>({
+    resolver: zodResolver(zodSectionSchema),
     defaultValues: defaultValues ?? {
       name: "",
     },

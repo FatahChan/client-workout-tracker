@@ -1,7 +1,7 @@
 import TextInputField from "@/components/TextInputField";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { Client, ClientSchema } from "@/lib/appwrite/types";
+import { ClientZodSchemaType, zodClientSchema } from "@/schema/client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,13 +17,13 @@ function ClientForm({
   submitButton,
   className,
 }: {
-  defaultValues?: Client;
-  onSubmit: (data: Client) => void;
+  defaultValues?: Partial<ClientZodSchemaType>;
+  onSubmit: (data: ClientZodSchemaType) => void;
   submitButton?: React.ReactNode;
   className?: string;
 }) {
-  const form = useForm<Client>({
-    resolver: zodResolver(ClientSchema),
+  const form = useForm<ClientZodSchemaType>({
+    resolver: zodResolver(zodClientSchema),
     defaultValues: defaultValues,
   });
 

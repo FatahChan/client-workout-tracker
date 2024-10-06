@@ -7,3 +7,5 @@ export const zodExerciseSchema = z.object({
   reps: z.coerce.number().int().min(0).max(100).max(100).optional(),
   weight: z.coerce.number().int().min(0).max(100).max(100).optional(),
 });
+
+export type ExerciseZodSchemaType = z.infer<typeof zodExerciseSchema>;

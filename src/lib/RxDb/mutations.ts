@@ -54,7 +54,7 @@ export async function createExercise(
 
 export async function updateExercise(
   exerciseId: string,
-  data: Omit<ExerciseDocType, CommonDocumentPropertiesKeys>
+  data: Omit<ExerciseDocType, CommonDocumentPropertiesKeys | "sectionId">
 ) {
   return await db.exercises.upsert({
     ...data,
@@ -65,7 +65,7 @@ export async function updateExercise(
 
 export async function updateSection(
   sectionId: string,
-  data: Omit<SectionDocType, CommonDocumentPropertiesKeys>
+  data: Omit<SectionDocType, CommonDocumentPropertiesKeys | "pageId">
 ) {
   return await db.sections.upsert({
     ...data,

@@ -1,7 +1,7 @@
 import TextInputField from "@/components/TextInputField";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { Exercise, ExerciseSchema } from "@/lib/appwrite/types";
+import { ExerciseZodSchemaType, zodExerciseSchema } from "@/schema/exercise";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -13,14 +13,14 @@ function ExerciseForm({
   className,
   disabled = false,
 }: {
-  defaultValues?: Exercise;
-  onSubmit: (data: Exercise) => void;
+  defaultValues?: Partial<ExerciseZodSchemaType>;
+  onSubmit: (data: ExerciseZodSchemaType) => void;
   submitButtonText?: string;
   className?: string;
   disabled?: boolean;
 }) {
-  const form = useForm<Exercise>({
-    resolver: zodResolver(ExerciseSchema),
+  const form = useForm<ExerciseZodSchemaType>({
+    resolver: zodResolver(zodExerciseSchema),
     defaultValues: defaultValues,
   });
 

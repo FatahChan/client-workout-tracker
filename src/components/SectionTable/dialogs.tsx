@@ -1,34 +1,35 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import DestructiveDailogWarning from "../DestructiveDailogWarning";
+import DestructiveDialogWarning from "../DestructiveDialogWarning";
 import { useSectionTable } from "./hook";
 import {
   updateExercise,
   createExercise,
   deleteExercise,
-} from "@/lib/appwrite/mutations";
-import { ExerciseDocument, Exercise } from "@/lib/appwrite/types";
+} from "@/lib/RxDb/mutations";
 import { Plus } from "lucide-react";
-import DialogTemplate from "../DialogTamplate";
+import DialogTemplate from "../DialogTemplate";
 import ExerciseForm from "../Forms/ExerciseForm";
 import { Button } from "../ui/button";
 import { useState } from "react";
+import { ExerciseDocType } from "@/lib/RxDb/schema";
+import { ExerciseZodSchemaType } from "@/schema/exercise";
 
 function EditExerciseDialog({
   exercise,
   trigger,
 }: {
-  exercise: ExerciseDocument;
+  exercise: ExerciseDocType;
   trigger?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const { sectionId } = useSectionTable();
   const queryClient = useQueryClient();
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: Exercise) => {
+    mutationFn: (data: ExerciseZodSchemaType) => {
       if (!exercise) {
         throw new Error("Exercise not found");
       }
-      return updateExercise(exercise.$id, data);
+      return updateExercise(exercise.id, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`section-${sectionId}`] });
@@ -53,7 +54,7 @@ function AddExerciseDialog() {
   const { sectionId } = useSectionTable();
   const queryClient = useQueryClient();
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: Exercise) => {
+    mutationFn: (data: ExerciseZodSchemaType) => {
       return createExercise(sectionId, data);
     },
     onSuccess: () => {
@@ -76,16 +77,16 @@ function AddExerciseDialog() {
   );
 }
 
-function DeleteExerciseDailog({ exercise }: { exercise: ExerciseDocument }) {
+function DeleteExerciseDialog({ exercise }: { exercise: ExerciseDocType }) {
   const { sectionId } = useSectionTable();
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
-    mutationFn: () => deleteExercise(exercise.$id),
+    mutationFn: () => deleteExercise(exercise.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`section-${sectionId}`] });
     },
   });
-  return <DestructiveDailogWarning onConfirm={mutate} />;
+  return <DestructiveDialogWarning onConfirm={mutate} />;
 }
 
-export { EditExerciseDialog, AddExerciseDialog, DeleteExerciseDailog };
+export { EditExerciseDialog, AddExerciseDialog, DeleteExerciseDialog };
