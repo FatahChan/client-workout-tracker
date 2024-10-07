@@ -11,6 +11,7 @@ import { SectionZodSchemaType } from "@/schema/section";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute(
   "/_layout/clients/$clientId/pages/$pageId/"
@@ -33,10 +34,15 @@ function AddSectionCard({ pageId }: { pageId: string }) {
   const [openForm, setOpenForm] = useState(false);
   const queryClient = useQueryClient();
   const { mutate, isPending } = useMutation({
+    onMutate: () => {},
     mutationFn: (data: SectionZodSchemaType) => createSection(pageId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`page-${pageId}`] });
+      queryClient.invalidateQueries({ queryKey: ["sections", pageId] });
+      toast.success("Section added successfully");
       setOpenForm(false);
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
   return (
@@ -45,7 +51,15 @@ function AddSectionCard({ pageId }: { pageId: string }) {
         open={openForm}
         setOpen={setOpenForm}
         trigger={<Button>Add Section</Button>}
-        content={<SectionForm onSubmit={mutate} disabled={isPending} />}
+        content={
+          <SectionForm
+            onSubmit={mutate}
+            disabled={isPending}
+            defaultValues={{ pageId }}
+          />
+        }
+        title={"Add Section"}
+        description="Add a new section to the page."
       />
     </CardTile>
   );
@@ -53,7 +67,7 @@ function AddSectionCard({ pageId }: { pageId: string }) {
 
 function SectionsGrid({ pageId }: { pageId: string }) {
   const { data: sections } = useQuery({
-    queryKey: [`sections-${pageId}`],
+    queryKey: ["sections", pageId],
     queryFn: () => listSections(pageId),
   });
   return (
@@ -69,11 +83,11 @@ function SectionsGrid({ pageId }: { pageId: string }) {
 function Page() {
   const { clientId, pageId } = Route.useParams();
   const { data: client } = useQuery({
-    queryKey: [`client-${clientId}`],
+    queryKey: ["client", clientId],
     queryFn: () => getClient(clientId),
   });
   const { data: page, isLoading } = useQuery({
-    queryKey: [`page-${pageId}`],
+    queryKey: ["page", pageId],
     queryFn: () => getPage(pageId),
   });
 

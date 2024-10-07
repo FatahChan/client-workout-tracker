@@ -3,7 +3,6 @@ import DestructiveDialogWarning from "@/components/DestructiveDialogWarning";
 import DialogTemplate from "@/components/DialogTemplate";
 import ClientForm from "@/components/Forms/ClientForm";
 import { Button } from "@/components/ui/button";
-import { DialogClose } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -21,14 +20,11 @@ import {
 import { getClient, listPages } from "@/lib/RxDb/queries";
 import { ClientDocType, PageDocType } from "@/lib/RxDb/schema";
 import { ClientZodSchemaType } from "@/schema/client";
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Pencil, Trash } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_layout/clients/$clientId/")({
   loader: ({ context: { queryClient }, params: { clientId } }) => {
@@ -46,7 +42,7 @@ function AddPageCard({ clientId }: { clientId: string }) {
   const { mutate, isPending } = useMutation({
     mutationFn: () => createPage(clientId),
     onSuccess: (page) => {
-      queryClient.invalidateQueries({ queryKey: [`client-${clientId}`] });
+      queryClient.invalidateQueries({ queryKey: ["pages", clientId] });
       navigate({
         to: "/clients/$clientId/pages/$pageId",
         params: {
@@ -54,6 +50,9 @@ function AddPageCard({ clientId }: { clientId: string }) {
           pageId: page.id,
         },
       });
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
   return (
@@ -70,7 +69,11 @@ function PageCard({ clientId, page }: { clientId: string; page: PageDocType }) {
   const { mutate: deletePageMutate } = useMutation({
     mutationFn: () => deletePage(page.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`client-${clientId}`] });
+      queryClient.invalidateQueries({ queryKey: ["pages", clientId] });
+      toast.success("Page deleted successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
   return (
@@ -112,19 +115,25 @@ function ActionsCell({ clientDocument }: { clientDocument: ClientDocType }) {
     mutationFn: () => deleteClient(clientDocument.id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [`client-${clientDocument.id}`],
+        queryKey: ["clients"],
       });
       navigate({ to: "/clients" });
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
   const { mutate: updateClientMutate } = useMutation({
     mutationFn: (client: ClientZodSchemaType) =>
       updateClient(clientDocument.id, client),
     onSuccess: () => {
-      setOpenForm(false);
       queryClient.invalidateQueries({
-        queryKey: [`client-${clientDocument.id}`],
+        queryKey: ["client", clientDocument.id],
       });
+      setOpenForm(false);
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
   return (
@@ -142,13 +151,14 @@ function ActionsCell({ clientDocument }: { clientDocument: ClientDocType }) {
         description={`Edit information about ${clientDocument.name}`}
         content={
           <ClientForm
-            defaultValues={clientDocument}
+            defaultValues={{
+              name: clientDocument.name,
+              age: clientDocument.age,
+              bodyType: clientDocument.bodyType,
+              goal: clientDocument.goal,
+            }}
             onSubmit={updateClientMutate}
-            submitButton={
-              <DialogClose asChild>
-                <Button>Save</Button>
-              </DialogClose>
-            }
+            submitButton={<Button>Save</Button>}
           />
         }
       />
@@ -161,14 +171,14 @@ function ActionsCell({ clientDocument }: { clientDocument: ClientDocType }) {
 }
 
 function PagesGrid({ clientId }: { clientId: string }) {
-  const { data: pages } = useSuspenseQuery({
-    queryKey: [`pages-${clientId}`],
+  const { data: pages } = useQuery({
+    queryKey: ["pages", clientId],
     queryFn: () => listPages(clientId),
   });
   return (
     <div className="flex flex-wrap gap-4">
       <AddPageCard clientId={clientId} />
-      {pages.map((page) => (
+      {pages?.map((page) => (
         <PageCard key={page.id} clientId={clientId} page={page} />
       ))}
     </div>
@@ -176,8 +186,8 @@ function PagesGrid({ clientId }: { clientId: string }) {
 }
 function ClientPage() {
   const { clientId } = Route.useParams();
-  const { data } = useSuspenseQuery({
-    queryKey: [`client-${clientId}`],
+  const { data } = useQuery({
+    queryKey: ["client", clientId],
     queryFn: () => getClient(clientId),
   });
   if (!data) {

@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 function ExerciseForm({
-  defaultValues,
+  defaultValues = {},
   onSubmit,
   submitButtonText = "Submit",
   className,
@@ -21,7 +21,13 @@ function ExerciseForm({
 }) {
   const form = useForm<ExerciseZodSchemaType>({
     resolver: zodResolver(zodExerciseSchema),
-    defaultValues: defaultValues,
+    defaultValues: {
+      name: "",
+      sets: 0,
+      reps: 0,
+      weight: 0,
+      ...defaultValues,
+    },
   });
 
   return (

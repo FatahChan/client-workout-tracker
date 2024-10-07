@@ -1,19 +1,17 @@
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
-  SheetTrigger,
   SheetContent,
+  SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetFooter,
+  SheetTrigger,
 } from "@/components/ui/sheet";
-import { account } from "@/lib/appwrite";
-import { useMutation } from "@tanstack/react-query";
 import {
   createFileRoute,
   Link,
   Outlet,
-  redirect,
   useRouter,
 } from "@tanstack/react-router";
 import { ArrowLeft, Menu as MenuIcon } from "lucide-react";
@@ -23,13 +21,6 @@ export const Route = createFileRoute("/_layout")({
 });
 
 function Menu() {
-  const { mutate: logout } = useMutation({
-    mutationFn: () => account.deleteSession("current"),
-    onSuccess: () => {
-      throw redirect({ to: "/login" });
-    },
-  });
-
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -42,6 +33,9 @@ function Menu() {
         <SheetHeader className="mb-4">
           <SheetTitle>Clients Workout Tracker App</SheetTitle>
         </SheetHeader>
+        <SheetDescription className="sr-only">
+          Main navigation menu
+        </SheetDescription>
         <div className="flex flex-col gap-4 my-4">
           <Link to="/clients" className="underline">
             Home
@@ -50,11 +44,7 @@ function Menu() {
             Clients
           </Link>
         </div>
-        <SheetFooter>
-          <Button onClick={() => logout()} variant={"destructive"}>
-            Logout
-          </Button>
-        </SheetFooter>
+        <SheetFooter></SheetFooter>
       </SheetContent>
     </Sheet>
   );

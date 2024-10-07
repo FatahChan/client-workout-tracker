@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,30 +9,30 @@ import {
 } from "../ui/dialog";
 
 function DialogTemplate({
-  trigger,
-  content,
-  title,
-  description,
   open,
   setOpen,
+  trigger,
+  title,
+  description,
+  content,
 }: {
-  trigger: React.ReactNode;
-  content: React.ReactNode;
-  title?: string;
-  description?: string;
-  open?: boolean;
-  setOpen?: (open: boolean) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  trigger: ReactNode;
+  title: string;
+  description: string;
+  content: ReactNode;
 }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>{trigger}</DialogTrigger>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
-        {title && (
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-          </DialogHeader>
-        )}
-        {description && <DialogDescription>{description}</DialogDescription>}
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {description}
+          </DialogDescription>
+        </DialogHeader>
         {content}
       </DialogContent>
     </Dialog>

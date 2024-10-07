@@ -17,6 +17,7 @@ import {
   EditExerciseDialog,
 } from "./dialogs";
 import { ExerciseDocType, SectionDocType } from "@/lib/RxDb/schema";
+import { toast } from "sonner";
 
 function SectionTableTitleHeader({ section }: { section: SectionDocType }) {
   const { pageId } = useParams({
@@ -27,20 +28,23 @@ function SectionTableTitleHeader({ section }: { section: SectionDocType }) {
   const { mutate: deleteSectionMutation } = useMutation({
     mutationFn: () => deleteSection(section.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`section-${section.id}`] });
-      queryClient.invalidateQueries({ queryKey: [`page-${pageId}`] });
+      queryClient.invalidateQueries({ queryKey: ["sections", pageId] });
+      toast.success("Section deleted successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
   const { mutate: updateSectionMutation } = useMutation({
     mutationFn: (data: { name: string }) => {
       return updateSection(section.id, data);
     },
-    onError: (error) => {
-      console.error(error);
-    },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["section", section.id] });
       setOpenForm(false);
-      queryClient.invalidateQueries({ queryKey: [`section-${section.id}`] });
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
@@ -57,11 +61,13 @@ function SectionTableTitleHeader({ section }: { section: SectionDocType }) {
               <Pencil size={16} />
             </Button>
           }
+          title="Edit Section"
+          description="Edit the section"
           content={
             <SectionForm
               onSubmit={updateSectionMutation}
               submitButtonText="Update Section"
-              defaultValues={{ name: section.name }}
+              defaultValues={{ pageId, name: section.name }}
             />
           }
         ></DialogTemplate>
@@ -79,15 +85,7 @@ function SectionTableTitleHeader({ section }: { section: SectionDocType }) {
 function ActionsCell({ row }: { row: Row<ExerciseDocType> }) {
   return (
     <div className="flex gap-2 flex-col justify-center items-center">
-      <EditExerciseDialog
-        exercise={row.original}
-        trigger={
-          <Button className="p-2 w-8 h-8">
-            <span className="sr-only">Edit Exercise</span>
-            <Pencil />
-          </Button>
-        }
-      />
+      <EditExerciseDialog exercise={row.original} />
 
       <DeleteExerciseDialog exercise={row.original} />
     </div>
@@ -125,13 +123,13 @@ function SectionTable({
   section: SectionDocType;
 }) {
   const { data: section } = useQuery({
-    queryKey: [`section-${initialSectionData.id}`],
+    queryKey: ["section", initialSectionData.id],
     queryFn: () => getSection(initialSectionData.id),
   });
 
   const { data: exercises } = useQuery({
     enabled: !!section,
-    queryKey: [`section-${section?.id}-exercises`],
+    queryKey: ["exercises", section?.id],
     queryFn: () => {
       if (!section) throw new Error("Section not found");
       return listExercises(section.id);

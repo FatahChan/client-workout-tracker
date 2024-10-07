@@ -21,8 +21,9 @@ function SectionForm({
 }) {
   const form = useForm<SectionZodSchemaType>({
     resolver: zodResolver(zodSectionSchema),
-    defaultValues: defaultValues ?? {
+    defaultValues: {
       name: "",
+      ...defaultValues,
     },
   });
 

@@ -3,21 +3,10 @@ import { ClientDocType, clientJSONSchema } from "./client";
 import { PageDocType, pageJSONSchema } from "./page";
 import { SectionDocType, sectionJSONSchema } from "./section";
 import { ExerciseDocType, exerciseJSONSchema } from "./exercise";
-export const commonDocumentProperties = {
-  id: {
-    type: "string",
-    maxLength: 100,
-  },
-  createdAt: {
-    type: "number",
-  },
-  updatedAt: {
-    type: "number",
-  },
-} as const;
-
-export type CommonDocumentPropertiesKeys =
-  keyof typeof commonDocumentProperties;
+import {
+  commonDocumentProperties,
+  CommonDocumentPropertiesKeys,
+} from "./utils";
 
 export type DatabaseCollections = {
   clients: RxCollection<ClientDocType>;
@@ -34,3 +23,6 @@ export const schemas = {
   section: sectionJSONSchema,
   exercise: exerciseJSONSchema,
 } as const;
+
+export { commonDocumentProperties };
+export type { CommonDocumentPropertiesKeys };

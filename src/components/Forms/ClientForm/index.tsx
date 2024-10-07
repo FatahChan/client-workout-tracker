@@ -7,12 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 function ClientForm({
-  defaultValues = {
-    name: "",
-    age: 0,
-    bodyType: "",
-    goal: "",
-  },
+  defaultValues = {},
   onSubmit,
   submitButton,
   className,
@@ -24,7 +19,13 @@ function ClientForm({
 }) {
   const form = useForm<ClientZodSchemaType>({
     resolver: zodResolver(zodClientSchema),
-    defaultValues: defaultValues,
+    defaultValues: {
+      name: "",
+      age: 0,
+      bodyType: "",
+      goal: "",
+      ...defaultValues,
+    },
   });
 
   return (

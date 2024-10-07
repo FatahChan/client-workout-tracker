@@ -1,41 +1,28 @@
 import CardTile from "@/components/CardTile";
+import DialogTemplate from "@/components/DialogTemplate";
 import ClientForm from "@/components/Forms/ClientForm";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { createClient } from "@/lib/RxDb/mutations";
 import { listClients } from "@/lib/RxDb/queries";
 import { ClientZodSchemaType } from "@/schema/client";
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_layout/clients/")({
-  loader: ({ context: { queryClient } }) => {
-    queryClient.ensureQueryData({
-      queryKey: ["clients"],
-      queryFn: () => listClients(),
-    });
-  },
   component: ClientsPage,
 });
 
 function AddClientButton() {
+  const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationFn: (data: ClientZodSchemaType) => createClient(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
+      setOpen(false);
+      toast.success("Client added successfully");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -43,31 +30,25 @@ function AddClientButton() {
   });
 
   return (
-    <Dialog>
-      <CardTile>
-        <Button asChild>
-          <DialogTrigger>Add Client</DialogTrigger>
-        </Button>
-      </CardTile>
-      <DialogContent className="rounded-md">
-        <DialogHeader>
-          <DialogTitle>Add Client</DialogTitle>
-          <DialogDescription className="sr-only">
-            Add a new client
-          </DialogDescription>
-        </DialogHeader>
-        <ClientForm onSubmit={mutate} />
-      </DialogContent>
-    </Dialog>
+    <CardTile>
+      <DialogTemplate
+        open={open}
+        setOpen={setOpen}
+        trigger={<Button>Add Client</Button>}
+        content={<ClientForm onSubmit={mutate} />}
+        title="Add Client"
+        description="Add a new client"
+      />
+    </CardTile>
   );
 }
 
 function ClientsPage() {
-  const { data } = useSuspenseQuery({
+  const { data } = useQuery({
     queryKey: ["clients"],
     queryFn: () => listClients(),
   });
-  console.log(data);
+
   return (
     <>
       <h2 className="text-2xl font-bold pb-4">Clients</h2>

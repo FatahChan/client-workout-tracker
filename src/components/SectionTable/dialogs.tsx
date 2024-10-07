@@ -6,17 +6,17 @@ import {
   createExercise,
   deleteExercise,
 } from "@/lib/RxDb/mutations";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import DialogTemplate from "../DialogTemplate";
 import ExerciseForm from "../Forms/ExerciseForm";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { ExerciseDocType } from "@/lib/RxDb/schema";
 import { ExerciseZodSchemaType } from "@/schema/exercise";
+import { toast } from "sonner";
 
 function EditExerciseDialog({
   exercise,
-  trigger,
 }: {
   exercise: ExerciseDocType;
   trigger?: React.ReactNode;
@@ -32,17 +32,36 @@ function EditExerciseDialog({
       return updateExercise(exercise.id, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`section-${sectionId}`] });
+      queryClient.invalidateQueries({ queryKey: ["exercises", sectionId] });
       setOpen(false);
+      toast.success("Exercise updated successfully");
     },
     onError: (error) => {
-      console.error(error);
+      toast.error(error.message);
     },
   });
   return (
     <DialogTemplate
-      trigger={trigger ?? <Button disabled={isPending}>Edit Exercise</Button>}
-      content={<ExerciseForm defaultValues={exercise} onSubmit={mutate} />}
+      trigger={
+        <Button size="sm" disabled={isPending} className="p-2 w-8 h-8">
+          <span className="sr-only">Edit Exercise</span>
+          <Pencil size={16} />
+        </Button>
+      }
+      content={
+        <ExerciseForm
+          defaultValues={{
+            sectionId,
+            name: exercise.name,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            weight: exercise.weight,
+          }}
+          onSubmit={mutate}
+        />
+      }
+      title="Edit Exercise"
+      description="Edit the exercise details and click save."
       open={open}
       setOpen={setOpen}
     />
@@ -58,21 +77,35 @@ function AddExerciseDialog() {
       return createExercise(sectionId, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`section-${sectionId}`] });
+      queryClient.invalidateQueries({ queryKey: ["exercises", sectionId] });
       setOpen(false);
+      toast.success("Exercise added successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
   return (
     <DialogTemplate
       open={open}
       setOpen={setOpen}
+      title="Add Exercise"
+      description="Add a new exercise to the section."
       trigger={
         <Button className="w-full">
           <span className="sr-only">Add Exercise</span>
           <Plus />
         </Button>
       }
-      content={<ExerciseForm onSubmit={mutate} disabled={isPending} />}
+      content={
+        <ExerciseForm
+          defaultValues={{
+            sectionId,
+          }}
+          onSubmit={mutate}
+          disabled={isPending}
+        />
+      }
     />
   );
 }
@@ -83,7 +116,11 @@ function DeleteExerciseDialog({ exercise }: { exercise: ExerciseDocType }) {
   const { mutate } = useMutation({
     mutationFn: () => deleteExercise(exercise.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`section-${sectionId}`] });
+      queryClient.invalidateQueries({ queryKey: ["exercises", sectionId] });
+      toast.success("Exercise deleted successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
   return <DestructiveDialogWarning onConfirm={mutate} />;
