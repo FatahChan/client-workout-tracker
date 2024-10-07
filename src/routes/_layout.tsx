@@ -31,8 +31,11 @@ function Menu() {
     queryKey: ["user"],
     queryFn: () => checkIfUserIsLoggedIn(),
     throwOnError: (error) => {
-      if (error.message === "User is not logged in") {
-        return false;
+      switch (error.message) {
+        case "User is not logged in":
+          return false;
+        case "Failed to fetch":
+          return false;
       }
       return true;
     },
