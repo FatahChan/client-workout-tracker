@@ -1,9 +1,14 @@
 import { addRxPlugin, createRxDatabase, RxDatabase } from "rxdb";
-import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
-import { DatabaseCollections, schemas } from "./schema";
 import { RxDBQueryBuilderPlugin } from "rxdb/plugins/query-builder";
+import { RxReplicationState } from "rxdb/plugins/replication";
+import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
+import { ClientDocType, DatabaseCollections, schemas } from "./schema";
 
 export let db: RxDatabase<DatabaseCollections>;
+export let clientsCollectionReplicationState: RxReplicationState<
+  ClientDocType,
+  ClientDocType | undefined | null
+>;
 export async function getDataBaseInstance() {
   if (db) {
     return db;
@@ -15,7 +20,7 @@ export async function getDataBaseInstance() {
   }
   addRxPlugin(RxDBQueryBuilderPlugin);
 
-  const _db = await createRxDatabase<DatabaseCollections>({
+  db = await createRxDatabase<DatabaseCollections>({
     name: "clients-workout-tracker",
     storage: getRxStorageDexie(),
     multiInstance: true,
@@ -23,7 +28,7 @@ export async function getDataBaseInstance() {
     ignoreDuplicate: true,
   });
 
-  await _db.addCollections({
+  await db.addCollections({
     clients: {
       schema: schemas.client,
     },
@@ -37,16 +42,15 @@ export async function getDataBaseInstance() {
       schema: schemas.exercise,
     },
   });
-  _db.clients.preRemove((data) => {
-    _db.pages.find().where({ clientId: data.id }).remove();
+  db.clients.preRemove((data) => {
+    db.pages.find().where({ clientId: data.id }).remove();
   }, true);
-  _db.pages.preRemove((data) => {
-    _db.sections.find().where({ pageId: data.id }).remove();
+  db.pages.preRemove((data) => {
+    db.sections.find().where({ pageId: data.id }).remove();
   }, true);
-  _db.sections.preRemove((data) => {
-    _db.exercises.find().where({ sectionId: data.id }).remove();
+  db.sections.preRemove((data) => {
+    db.exercises.find().where({ sectionId: data.id }).remove();
   }, true);
 
-  db = _db;
-  return _db;
+  return db;
 }

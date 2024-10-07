@@ -12,8 +12,8 @@ export async function createClient(
   return await db.clients.insert({
     ...data,
     id: crypto.randomUUID(),
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   });
 }
 
@@ -21,8 +21,8 @@ export async function createPage(clientId: string) {
   return await db.pages.insert({
     id: crypto.randomUUID(),
     clientId,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   });
 }
 
@@ -34,8 +34,8 @@ export async function createSection(
     ...data,
     id: crypto.randomUUID(),
     pageId,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   });
 }
 
@@ -47,8 +47,8 @@ export async function createExercise(
     ...data,
     id: crypto.randomUUID(),
     sectionId,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   });
 }
 
@@ -59,7 +59,7 @@ export async function updateExercise(
   return await db.exercises.upsert({
     ...data,
     id: exerciseId,
-    updatedAt: Date.now(),
+    updatedAt: new Date().toISOString(),
   });
 }
 
@@ -70,7 +70,7 @@ export async function updateSection(
   return await db.sections.upsert({
     ...data,
     id: sectionId,
-    updatedAt: Date.now(),
+    updatedAt: new Date().toISOString(),
   });
 }
 
@@ -81,7 +81,7 @@ export async function updateClient(
   return await db.clients.upsert({
     ...data,
     id: clientId,
-    updatedAt: Date.now(),
+    updatedAt: new Date().toISOString(),
   });
 }
 

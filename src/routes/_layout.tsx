@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { account } from "@/lib/appwrite";
 import { checkIfUserIsLoggedIn } from "@/lib/appwrite/util";
+import { startReplication } from "@/lib/RxDb/replication";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createFileRoute,
@@ -18,7 +19,7 @@ import {
   Outlet,
   useRouter,
 } from "@tanstack/react-router";
-import { ArrowLeft, Menu as MenuIcon } from "lucide-react";
+import { ArrowLeft, FolderSync, Menu as MenuIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_layout")({
   component: Layout,
@@ -36,7 +37,6 @@ function Menu() {
       return true;
     },
   });
-  console.log(user);
   const { mutate: logoutMutation } = useMutation({
     onMutate: () => {
       console.log("Logging out...");
@@ -46,6 +46,13 @@ function Menu() {
       queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
+
+  const { mutate: startSync } = useMutation({
+    mutationFn: () => {
+      return startReplication();
+    },
+  });
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -72,6 +79,9 @@ function Menu() {
               Clients
             </Link>
           </SheetClose>
+          <Button onClick={() => startSync()}>
+            <FolderSync />
+          </Button>
         </div>
         <SheetFooter>
           {user ? (

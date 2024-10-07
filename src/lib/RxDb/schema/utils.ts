@@ -1,3 +1,4 @@
+import { Models } from "appwrite";
 import {
   DeepReadonlyObject,
   ExtractDocumentTypeFromTypedRxJsonSchema,
@@ -19,10 +20,12 @@ export const commonDocumentProperties = {
     maxLength: 100,
   },
   createdAt: {
-    type: "number",
+    type: "string",
+    format: "date-time",
   },
   updatedAt: {
-    type: "number",
+    type: "string",
+    format: "date-time",
   },
 } as const;
 
@@ -36,3 +39,36 @@ export const jsonSchemaTemplate = {
   properties: commonDocumentProperties,
   required: ["id", "createdAt", "updatedAt"],
 } as const;
+
+export function convertAppwriteDocumentToRxDBDocumentData<
+  T extends Models.Document,
+  R extends {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    _deleted: boolean;
+  },
+>(doc?: T | null) {
+  if (!doc) {
+    return doc;
+  }
+  const {
+    $id,
+    $createdAt,
+    $updatedAt,
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    $collectionId,
+    $databaseId,
+    $permissions,
+    /* eslint-enable @typescript-eslint/no-unused-vars */
+    ...reset
+  } = doc;
+
+  return {
+    id: $id,
+    createdAt: $createdAt,
+    updatedAt: $updatedAt,
+    _deleted: false,
+    ...reset,
+  } as unknown as R;
+}
