@@ -9,6 +9,7 @@ import {
 type ClientZodSchemaType = z.infer<typeof zodClientSchema>;
 export const clientJSONSchema = {
   ...jsonSchemaTemplate,
+  title: "client",
   properties: {
     ...jsonSchemaTemplate.properties,
     name: {

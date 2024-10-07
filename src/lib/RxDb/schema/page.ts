@@ -10,6 +10,7 @@ type PageZodSchemaType = z.infer<typeof zodPageSchema>;
 
 export const pageJSONSchema = {
   ...jsonSchemaTemplate,
+  title: "page",
   properties: {
     ...jsonSchemaTemplate.properties,
     clientId: {
