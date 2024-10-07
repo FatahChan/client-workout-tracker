@@ -42,6 +42,7 @@ import {
 } from "./schema";
 import { convertAppwriteDocumentToRxDBDocumentData } from "./schema/utils";
 
+const RETRY_TIME_IN_MS = 10 * 60 * 1000;
 let clientsCollectionReplicationState: RxReplicationState<
   ClientDocType,
   ClientDocType | undefined
@@ -79,7 +80,7 @@ export async function getClientReplicationState(
   >({
     collection: db.clients,
     replicationIdentifier: "clientsReplication",
-
+    retryTime: RETRY_TIME_IN_MS,
     push: {
       handler: async (changeRows) => {
         const conflicts = [];
@@ -185,7 +186,7 @@ export async function getPageReplicationState(newReplication: boolean = false) {
   >({
     collection: db.pages,
     replicationIdentifier: "pagesReplication",
-
+    retryTime: RETRY_TIME_IN_MS,
     push: {
       handler: async (changeRows) => {
         const conflicts = [];
@@ -277,7 +278,7 @@ export async function getSectionReplicationState() {
   >({
     collection: db.sections,
     replicationIdentifier: "sectionsReplication",
-
+    retryTime: RETRY_TIME_IN_MS,
     push: {
       handler: async (changeRows) => {
         const conflicts = [];
@@ -377,7 +378,7 @@ export async function getExerciseReplicationState(
   >({
     collection: db.exercises,
     replicationIdentifier: "exercisesReplication",
-
+    retryTime: RETRY_TIME_IN_MS,
     push: {
       handler: async (changeRows) => {
         const conflicts = [];
