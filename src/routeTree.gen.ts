@@ -12,8 +12,8 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as LayoutImport } from './routes/_layout'
-import { Route as LoginIndexImport } from './routes/login/index'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
+import { Route as LayoutLoginIndexImport } from './routes/_layout/login/index'
 import { Route as LayoutClientsIndexImport } from './routes/_layout/clients/index'
 import { Route as LayoutClientsClientIdIndexImport } from './routes/_layout/clients/$clientId/index'
 import { Route as LayoutClientsClientIdPagesPageIdIndexImport } from './routes/_layout/clients/$clientId/pages/$pageId/index'
@@ -25,13 +25,13 @@ const LayoutRoute = LayoutImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LoginIndexRoute = LoginIndexImport.update({
-  path: '/login/',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const LayoutIndexRoute = LayoutIndexImport.update({
   path: '/',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutLoginIndexRoute = LayoutLoginIndexImport.update({
+  path: '/login/',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -71,18 +71,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexImport
       parentRoute: typeof LayoutImport
     }
-    '/login/': {
-      id: '/login/'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginIndexImport
-      parentRoute: typeof rootRoute
-    }
     '/_layout/clients/': {
       id: '/_layout/clients/'
       path: '/clients'
       fullPath: '/clients'
       preLoaderRoute: typeof LayoutClientsIndexImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/login/': {
+      id: '/_layout/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LayoutLoginIndexImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/clients/$clientId/': {
@@ -107,6 +107,7 @@ declare module '@tanstack/react-router' {
 interface LayoutRouteChildren {
   LayoutIndexRoute: typeof LayoutIndexRoute
   LayoutClientsIndexRoute: typeof LayoutClientsIndexRoute
+  LayoutLoginIndexRoute: typeof LayoutLoginIndexRoute
   LayoutClientsClientIdIndexRoute: typeof LayoutClientsClientIdIndexRoute
   LayoutClientsClientIdPagesPageIdIndexRoute: typeof LayoutClientsClientIdPagesPageIdIndexRoute
 }
@@ -114,6 +115,7 @@ interface LayoutRouteChildren {
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutIndexRoute: LayoutIndexRoute,
   LayoutClientsIndexRoute: LayoutClientsIndexRoute,
+  LayoutLoginIndexRoute: LayoutLoginIndexRoute,
   LayoutClientsClientIdIndexRoute: LayoutClientsClientIdIndexRoute,
   LayoutClientsClientIdPagesPageIdIndexRoute:
     LayoutClientsClientIdPagesPageIdIndexRoute,
@@ -125,16 +127,16 @@ const LayoutRouteWithChildren =
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
   '/': typeof LayoutIndexRoute
-  '/login': typeof LoginIndexRoute
   '/clients': typeof LayoutClientsIndexRoute
+  '/login': typeof LayoutLoginIndexRoute
   '/clients/$clientId': typeof LayoutClientsClientIdIndexRoute
   '/clients/$clientId/pages/$pageId': typeof LayoutClientsClientIdPagesPageIdIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof LayoutIndexRoute
-  '/login': typeof LoginIndexRoute
   '/clients': typeof LayoutClientsIndexRoute
+  '/login': typeof LayoutLoginIndexRoute
   '/clients/$clientId': typeof LayoutClientsClientIdIndexRoute
   '/clients/$clientId/pages/$pageId': typeof LayoutClientsClientIdPagesPageIdIndexRoute
 }
@@ -143,8 +145,8 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
   '/_layout/': typeof LayoutIndexRoute
-  '/login/': typeof LoginIndexRoute
   '/_layout/clients/': typeof LayoutClientsIndexRoute
+  '/_layout/login/': typeof LayoutLoginIndexRoute
   '/_layout/clients/$clientId/': typeof LayoutClientsClientIdIndexRoute
   '/_layout/clients/$clientId/pages/$pageId/': typeof LayoutClientsClientIdPagesPageIdIndexRoute
 }
@@ -154,23 +156,23 @@ export interface FileRouteTypes {
   fullPaths:
     | ''
     | '/'
-    | '/login'
     | '/clients'
+    | '/login'
     | '/clients/$clientId'
     | '/clients/$clientId/pages/$pageId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/login'
     | '/clients'
+    | '/login'
     | '/clients/$clientId'
     | '/clients/$clientId/pages/$pageId'
   id:
     | '__root__'
     | '/_layout'
     | '/_layout/'
-    | '/login/'
     | '/_layout/clients/'
+    | '/_layout/login/'
     | '/_layout/clients/$clientId/'
     | '/_layout/clients/$clientId/pages/$pageId/'
   fileRoutesById: FileRoutesById
@@ -178,12 +180,10 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
-  LoginIndexRoute: typeof LoginIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
-  LoginIndexRoute: LoginIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -198,8 +198,7 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/_layout",
-        "/login/"
+        "/_layout"
       ]
     },
     "/_layout": {
@@ -207,6 +206,7 @@ export const routeTree = rootRoute
       "children": [
         "/_layout/",
         "/_layout/clients/",
+        "/_layout/login/",
         "/_layout/clients/$clientId/",
         "/_layout/clients/$clientId/pages/$pageId/"
       ]
@@ -215,11 +215,12 @@ export const routeTree = rootRoute
       "filePath": "_layout/index.tsx",
       "parent": "/_layout"
     },
-    "/login/": {
-      "filePath": "login/index.tsx"
-    },
     "/_layout/clients/": {
       "filePath": "_layout/clients/index.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/login/": {
+      "filePath": "_layout/login/index.tsx",
       "parent": "/_layout"
     },
     "/_layout/clients/$clientId/": {

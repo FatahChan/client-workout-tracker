@@ -46,6 +46,7 @@ export async function getDataBaseInstance() {
   _db.sections.preRemove((data) => {
     _db.exercises.find().where({ sectionId: data.id }).remove();
   }, true);
+
   db = _db;
   return _db;
 }

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -8,6 +9,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { account } from "@/lib/appwrite";
+import { checkIfUserIsLoggedIn } from "@/lib/appwrite/util";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createFileRoute,
   Link,
@@ -21,6 +25,27 @@ export const Route = createFileRoute("/_layout")({
 });
 
 function Menu() {
+  const queryClient = useQueryClient();
+  const { data: user } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => checkIfUserIsLoggedIn(),
+    throwOnError: (error) => {
+      if (error.message === "User is not logged in") {
+        return false;
+      }
+      return true;
+    },
+  });
+  console.log(user);
+  const { mutate: logoutMutation } = useMutation({
+    onMutate: () => {
+      console.log("Logging out...");
+    },
+    mutationFn: () => account.deleteSession("current"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -37,14 +62,34 @@ function Menu() {
           Main navigation menu
         </SheetDescription>
         <div className="flex flex-col gap-4 my-4">
-          <Link to="/clients" className="underline">
-            Home
-          </Link>
-          <Link to="/clients" className="underline">
-            Clients
-          </Link>
+          <SheetClose asChild>
+            <Link to="/clients" className="underline">
+              Home
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Link to="/clients" className="underline">
+              Clients
+            </Link>
+          </SheetClose>
         </div>
-        <SheetFooter></SheetFooter>
+        <SheetFooter>
+          {user ? (
+            <SheetClose asChild>
+              <Button variant={"destructive"} onClick={() => logoutMutation}>
+                Logout
+              </Button>
+            </SheetClose>
+          ) : (
+            <SheetClose asChild>
+              <Button asChild>
+                <Link to="/login" className="underline">
+                  Login
+                </Link>
+              </Button>
+            </SheetClose>
+          )}
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   );
