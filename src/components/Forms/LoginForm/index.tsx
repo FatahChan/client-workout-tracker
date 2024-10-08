@@ -10,6 +10,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { ID } from "appwrite";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 function LoginForm() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -25,6 +26,7 @@ function VerifyOtpForm({ userId }: { userId: string }) {
   const verifyOtpForm = useForm<{ otp: string }>({
     resolver: zodResolver(z.object({ otp: z.string().length(6) })),
   });
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const verifyOtpFormOnSubmit = async (values: { otp: string }) => {
     const { success, data, error } = await z
@@ -37,6 +39,7 @@ function VerifyOtpForm({ userId }: { userId: string }) {
         await account.createSession(userId, data.otp);
         toast.success("Logged in");
         navigate({ to: "/" });
+        queryClient.invalidateQueries({ queryKey: ["user"] });
       } catch (e) {
         console.error(e);
       }
@@ -46,7 +49,7 @@ function VerifyOtpForm({ userId }: { userId: string }) {
     <Form {...verifyOtpForm}>
       <form
         onSubmit={verifyOtpForm.handleSubmit(verifyOtpFormOnSubmit)}
-        className="grid grid-cols-1 gap-8"
+        className="grid grid-cols-1 gap-6"
       >
         <OtpField formControl={verifyOtpForm.control} name="otp" />
         <Button type="submit" disabled={verifyOtpForm.formState.isSubmitting}>

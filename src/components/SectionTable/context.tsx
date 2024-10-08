@@ -1,4 +1,4 @@
-import { ExerciseDocument } from "@/lib/appwrite/types";
+import { ExerciseDocType } from "@/lib/RxDb/schema";
 import React from "react";
 import { createContext, useState, type Dispatch } from "react";
 
@@ -8,8 +8,8 @@ type SectionTableContextType = {
   setShowAddExerciseForm: Dispatch<React.SetStateAction<boolean>>;
   showEditExerciseForm: boolean;
   setShowEditExerciseForm: Dispatch<React.SetStateAction<boolean>>;
-  exerciseToEdit: ExerciseDocument | null;
-  setExerciseToEdit: Dispatch<React.SetStateAction<ExerciseDocument | null>>;
+  exerciseToEdit: ExerciseDocType | null;
+  setExerciseToEdit: Dispatch<React.SetStateAction<ExerciseDocType | null>>;
 };
 export const SectionTableContext =
   createContext<SectionTableContextType | null>(null);
@@ -23,7 +23,7 @@ export const SectionTableProvider = ({
 }) => {
   const [showAddExerciseForm, setShowAddExerciseForm] = useState(false);
   const [showEditExerciseForm, setShowEditExerciseForm] = useState(false);
-  const [exerciseToEdit, setExerciseToEdit] = useState<ExerciseDocument | null>(
+  const [exerciseToEdit, setExerciseToEdit] = useState<ExerciseDocType | null>(
     null
   );
   return (

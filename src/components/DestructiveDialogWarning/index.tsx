@@ -11,7 +11,7 @@ import {
 import { Trash } from "lucide-react";
 import { Button } from "../ui/button";
 
-function DestructiveDailogWarning({
+function DestructiveDialogWarning({
   title,
   description,
   onConfirm,
@@ -55,4 +55,4 @@ function DestructiveDailogWarning({
   );
 }
 
-export default DestructiveDailogWarning;
+export default DestructiveDialogWarning;

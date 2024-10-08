@@ -1,37 +1,26 @@
-import { AppwriteException, Models } from "appwrite";
+import { AppwriteException } from "appwrite";
 import { account } from ".";
 /**
- *
+ * @param [safe=false] - If true, the function will not throw an error if the user is not logged in
  * @description Check if the user is logged in and throw an error if not otherwise return the user
  * @returns user
  */
-async function checkIfUserIsLoggedIn() {
-  let user;
+async function checkIfUserIsLoggedIn(safe = false) {
   try {
-    user = await account.get();
-    if (!user?.$id) {
+    const user = await account.get();
+    if (!user) {
       throw new Error("User is not logged in");
     }
-    // store user in local storage
-    localStorage.setItem("user", JSON.stringify(user));
     return user;
   } catch (error) {
-    if (error instanceof AppwriteException) {
-      switch (error.message) {
-        case "Failed to fetch": {
-          const localUser: Models.User<Models.Preferences> = JSON.parse(
-            localStorage.getItem("user") ?? "{}"
-          );
-          if (!localUser) {
-            throw new Error("User is not logged in");
-          }
-          return localUser;
-        }
-        default:
-          throw new Error("User is not logged in");
-      }
+    if (safe) {
+      return null;
     }
-    throw new Error("User is not logged in");
+    if (error instanceof AppwriteException && error.code === 401) {
+      throw new Error("User is not logged in");
+    }
+
+    throw error;
   }
 }
 

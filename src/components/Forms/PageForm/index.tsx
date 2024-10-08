@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { Page, PageSchema } from "@/lib/appwrite/types";
 import { cn } from "@/lib/utils";
+import { PageZodSchemaType, zodPageSchema } from "@/schema/page";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -11,13 +11,13 @@ function PageForm({
   submitButtonText = "Submit",
   className,
 }: {
-  defaultValues: Page;
-  onSubmit: (data: Page) => void;
+  defaultValues?: Partial<PageZodSchemaType>;
+  onSubmit: (data: PageZodSchemaType) => void;
   submitButtonText?: string;
   className?: string;
 }) {
-  const form = useForm<Page>({
-    resolver: zodResolver(PageSchema),
+  const form = useForm<PageZodSchemaType>({
+    resolver: zodResolver(zodPageSchema),
     defaultValues: defaultValues,
   });
 
