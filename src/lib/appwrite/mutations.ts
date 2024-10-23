@@ -13,6 +13,7 @@ import {
   ClientDocument,
   Exercise,
   ExerciseDocument,
+  Page,
   PageDocument,
   Section,
   SectionDocument,
@@ -27,7 +28,7 @@ const getFullAccessCurrentUser = (user: User) => {
     Permission.delete(Role.user(user.$id)),
   ];
 };
-export async function createClient(data: Client) {
+export async function createClient(data: Client, overrideId?: string) {
   const user = await account.get();
   if (!user) {
     throw new Error("User not found");
@@ -35,14 +36,14 @@ export async function createClient(data: Client) {
   const client = await databases.createDocument<ClientDocument>(
     APPWRITE_DATABASE_ID,
     APPWRITE_CLIENTS_COLLECTION_ID,
-    "unique()",
+    overrideId ? overrideId : "unique()",
     data,
     getFullAccessCurrentUser(user)
   );
   return client;
 }
 
-export async function createPage(clientId: string) {
+export async function createPage(clientId: string, overrideId?: string) {
   const user = await account.get();
   if (!user) {
     throw new Error("User not found");
@@ -50,14 +51,18 @@ export async function createPage(clientId: string) {
   const page = await databases.createDocument<PageDocument>(
     APPWRITE_DATABASE_ID,
     APPWRITE_PAGES_COLLECTION_ID,
-    "unique()",
+    overrideId ? overrideId : "unique()",
     { client: clientId },
     getFullAccessCurrentUser(user)
   );
   return page;
 }
 
-export async function createSection(pageId: string, data: Section) {
+export async function createSection(
+  pageId: string,
+  data: Section,
+  overrideId?: string
+) {
   const user = await account.get();
   if (!user) {
     throw new Error("User not found");
@@ -65,14 +70,18 @@ export async function createSection(pageId: string, data: Section) {
   const section = await databases.createDocument<SectionDocument>(
     APPWRITE_DATABASE_ID,
     APPWRITE_SECTIONS_COLLECTION_ID,
-    "unique()",
+    overrideId ? overrideId : "unique()",
     { page: pageId, ...data },
     getFullAccessCurrentUser(user)
   );
   return section;
 }
 
-export async function createExercise(sectionId: string, data: Exercise) {
+export async function createExercise(
+  sectionId: string,
+  data: Exercise,
+  overrideId?: string
+) {
   const user = await account.get();
   if (!user) {
     throw new Error("User not found");
@@ -80,7 +89,7 @@ export async function createExercise(sectionId: string, data: Exercise) {
   const exercise = await databases.createDocument<ExerciseDocument>(
     APPWRITE_DATABASE_ID,
     APPWRITE_EXERCISES_COLLECTION_ID,
-    "unique()",
+    overrideId ? overrideId : "unique()",
     {
       section: sectionId,
       ...data,
@@ -133,6 +142,20 @@ export async function updateClient(clientId: string, data: Client) {
     getFullAccessCurrentUser(user)
   );
   return client;
+}
+
+export async function updatePage(pageId: string, data: Page) {
+  const user = await account.get();
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const page = await databases.updateDocument<PageDocument>(
+    APPWRITE_DATABASE_ID,
+    APPWRITE_PAGES_COLLECTION_ID,
+    pageId,
+    data
+  );
+  return page;
 }
 
 export async function deleteExercise(exerciseId: string) {

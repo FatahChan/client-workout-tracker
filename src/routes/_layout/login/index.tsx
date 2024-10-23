@@ -10,7 +10,7 @@ const LoginForm = lazyRouteComponent(
   "LoginForm"
 );
 
-export const Route = createFileRoute("/login/")({
+export const Route = createFileRoute("/_layout/login/")({
   beforeLoad: async () => {
     try {
       const user = await checkIfUserIsLoggedIn();
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/login/")({
 
 function LoginPage() {
   return (
-    <div className="flex flex-col justify-center h-screen gap-40 max-w-96 m-auto">
+    <div className="flex flex-col md:justify-center gap-16 max-w-96 m-auto">
       <h1 className="text-2xl font-extrabold text-center">
         Clients Workout Tracker App
       </h1>

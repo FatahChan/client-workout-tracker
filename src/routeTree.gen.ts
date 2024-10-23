@@ -11,142 +11,144 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ProtectedImport } from './routes/_protected'
-import { Route as LoginIndexImport } from './routes/login/index'
-import { Route as ProtectedIndexImport } from './routes/_protected/index'
-import { Route as ProtectedClientsIndexImport } from './routes/_protected/clients/index'
-import { Route as ProtectedClientsClientIdIndexImport } from './routes/_protected/clients/$clientId/index'
-import { Route as ProtectedClientsClientIdPagesPageIdIndexImport } from './routes/_protected/clients/$clientId/pages/$pageId/index'
+import { Route as LayoutImport } from './routes/_layout'
+import { Route as LayoutIndexImport } from './routes/_layout/index'
+import { Route as LayoutLoginIndexImport } from './routes/_layout/login/index'
+import { Route as LayoutClientsIndexImport } from './routes/_layout/clients/index'
+import { Route as LayoutClientsClientIdIndexImport } from './routes/_layout/clients/$clientId/index'
+import { Route as LayoutClientsClientIdPagesPageIdIndexImport } from './routes/_layout/clients/$clientId/pages/$pageId/index'
 
 // Create/Update Routes
 
-const ProtectedRoute = ProtectedImport.update({
-  id: '/_protected',
+const LayoutRoute = LayoutImport.update({
+  id: '/_layout',
   getParentRoute: () => rootRoute,
 } as any)
 
-const LoginIndexRoute = LoginIndexImport.update({
-  path: '/login/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ProtectedIndexRoute = ProtectedIndexImport.update({
+const LayoutIndexRoute = LayoutIndexImport.update({
   path: '/',
-  getParentRoute: () => ProtectedRoute,
+  getParentRoute: () => LayoutRoute,
 } as any)
 
-const ProtectedClientsIndexRoute = ProtectedClientsIndexImport.update({
+const LayoutLoginIndexRoute = LayoutLoginIndexImport.update({
+  path: '/login/',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutClientsIndexRoute = LayoutClientsIndexImport.update({
   path: '/clients/',
-  getParentRoute: () => ProtectedRoute,
+  getParentRoute: () => LayoutRoute,
 } as any)
 
-const ProtectedClientsClientIdIndexRoute =
-  ProtectedClientsClientIdIndexImport.update({
+const LayoutClientsClientIdIndexRoute = LayoutClientsClientIdIndexImport.update(
+  {
     path: '/clients/$clientId/',
-    getParentRoute: () => ProtectedRoute,
-  } as any)
+    getParentRoute: () => LayoutRoute,
+  } as any,
+)
 
-const ProtectedClientsClientIdPagesPageIdIndexRoute =
-  ProtectedClientsClientIdPagesPageIdIndexImport.update({
+const LayoutClientsClientIdPagesPageIdIndexRoute =
+  LayoutClientsClientIdPagesPageIdIndexImport.update({
     path: '/clients/$clientId/pages/$pageId/',
-    getParentRoute: () => ProtectedRoute,
+    getParentRoute: () => LayoutRoute,
   } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_protected': {
-      id: '/_protected'
+    '/_layout': {
+      id: '/_layout'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof ProtectedImport
+      preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
-    '/_protected/': {
-      id: '/_protected/'
+    '/_layout/': {
+      id: '/_layout/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof ProtectedIndexImport
-      parentRoute: typeof ProtectedImport
+      preLoaderRoute: typeof LayoutIndexImport
+      parentRoute: typeof LayoutImport
     }
-    '/login/': {
-      id: '/login/'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/_protected/clients/': {
-      id: '/_protected/clients/'
+    '/_layout/clients/': {
+      id: '/_layout/clients/'
       path: '/clients'
       fullPath: '/clients'
-      preLoaderRoute: typeof ProtectedClientsIndexImport
-      parentRoute: typeof ProtectedImport
+      preLoaderRoute: typeof LayoutClientsIndexImport
+      parentRoute: typeof LayoutImport
     }
-    '/_protected/clients/$clientId/': {
-      id: '/_protected/clients/$clientId/'
+    '/_layout/login/': {
+      id: '/_layout/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LayoutLoginIndexImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/clients/$clientId/': {
+      id: '/_layout/clients/$clientId/'
       path: '/clients/$clientId'
       fullPath: '/clients/$clientId'
-      preLoaderRoute: typeof ProtectedClientsClientIdIndexImport
-      parentRoute: typeof ProtectedImport
+      preLoaderRoute: typeof LayoutClientsClientIdIndexImport
+      parentRoute: typeof LayoutImport
     }
-    '/_protected/clients/$clientId/pages/$pageId/': {
-      id: '/_protected/clients/$clientId/pages/$pageId/'
+    '/_layout/clients/$clientId/pages/$pageId/': {
+      id: '/_layout/clients/$clientId/pages/$pageId/'
       path: '/clients/$clientId/pages/$pageId'
       fullPath: '/clients/$clientId/pages/$pageId'
-      preLoaderRoute: typeof ProtectedClientsClientIdPagesPageIdIndexImport
-      parentRoute: typeof ProtectedImport
+      preLoaderRoute: typeof LayoutClientsClientIdPagesPageIdIndexImport
+      parentRoute: typeof LayoutImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface ProtectedRouteChildren {
-  ProtectedIndexRoute: typeof ProtectedIndexRoute
-  ProtectedClientsIndexRoute: typeof ProtectedClientsIndexRoute
-  ProtectedClientsClientIdIndexRoute: typeof ProtectedClientsClientIdIndexRoute
-  ProtectedClientsClientIdPagesPageIdIndexRoute: typeof ProtectedClientsClientIdPagesPageIdIndexRoute
+interface LayoutRouteChildren {
+  LayoutIndexRoute: typeof LayoutIndexRoute
+  LayoutClientsIndexRoute: typeof LayoutClientsIndexRoute
+  LayoutLoginIndexRoute: typeof LayoutLoginIndexRoute
+  LayoutClientsClientIdIndexRoute: typeof LayoutClientsClientIdIndexRoute
+  LayoutClientsClientIdPagesPageIdIndexRoute: typeof LayoutClientsClientIdPagesPageIdIndexRoute
 }
 
-const ProtectedRouteChildren: ProtectedRouteChildren = {
-  ProtectedIndexRoute: ProtectedIndexRoute,
-  ProtectedClientsIndexRoute: ProtectedClientsIndexRoute,
-  ProtectedClientsClientIdIndexRoute: ProtectedClientsClientIdIndexRoute,
-  ProtectedClientsClientIdPagesPageIdIndexRoute:
-    ProtectedClientsClientIdPagesPageIdIndexRoute,
+const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutIndexRoute: LayoutIndexRoute,
+  LayoutClientsIndexRoute: LayoutClientsIndexRoute,
+  LayoutLoginIndexRoute: LayoutLoginIndexRoute,
+  LayoutClientsClientIdIndexRoute: LayoutClientsClientIdIndexRoute,
+  LayoutClientsClientIdPagesPageIdIndexRoute:
+    LayoutClientsClientIdPagesPageIdIndexRoute,
 }
 
-const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
-  ProtectedRouteChildren,
-)
+const LayoutRouteWithChildren =
+  LayoutRoute._addFileChildren(LayoutRouteChildren)
 
 export interface FileRoutesByFullPath {
-  '': typeof ProtectedRouteWithChildren
-  '/': typeof ProtectedIndexRoute
-  '/login': typeof LoginIndexRoute
-  '/clients': typeof ProtectedClientsIndexRoute
-  '/clients/$clientId': typeof ProtectedClientsClientIdIndexRoute
-  '/clients/$clientId/pages/$pageId': typeof ProtectedClientsClientIdPagesPageIdIndexRoute
+  '': typeof LayoutRouteWithChildren
+  '/': typeof LayoutIndexRoute
+  '/clients': typeof LayoutClientsIndexRoute
+  '/login': typeof LayoutLoginIndexRoute
+  '/clients/$clientId': typeof LayoutClientsClientIdIndexRoute
+  '/clients/$clientId/pages/$pageId': typeof LayoutClientsClientIdPagesPageIdIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof ProtectedIndexRoute
-  '/login': typeof LoginIndexRoute
-  '/clients': typeof ProtectedClientsIndexRoute
-  '/clients/$clientId': typeof ProtectedClientsClientIdIndexRoute
-  '/clients/$clientId/pages/$pageId': typeof ProtectedClientsClientIdPagesPageIdIndexRoute
+  '/': typeof LayoutIndexRoute
+  '/clients': typeof LayoutClientsIndexRoute
+  '/login': typeof LayoutLoginIndexRoute
+  '/clients/$clientId': typeof LayoutClientsClientIdIndexRoute
+  '/clients/$clientId/pages/$pageId': typeof LayoutClientsClientIdPagesPageIdIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/_protected': typeof ProtectedRouteWithChildren
-  '/_protected/': typeof ProtectedIndexRoute
-  '/login/': typeof LoginIndexRoute
-  '/_protected/clients/': typeof ProtectedClientsIndexRoute
-  '/_protected/clients/$clientId/': typeof ProtectedClientsClientIdIndexRoute
-  '/_protected/clients/$clientId/pages/$pageId/': typeof ProtectedClientsClientIdPagesPageIdIndexRoute
+  '/_layout': typeof LayoutRouteWithChildren
+  '/_layout/': typeof LayoutIndexRoute
+  '/_layout/clients/': typeof LayoutClientsIndexRoute
+  '/_layout/login/': typeof LayoutLoginIndexRoute
+  '/_layout/clients/$clientId/': typeof LayoutClientsClientIdIndexRoute
+  '/_layout/clients/$clientId/pages/$pageId/': typeof LayoutClientsClientIdPagesPageIdIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -154,36 +156,34 @@ export interface FileRouteTypes {
   fullPaths:
     | ''
     | '/'
-    | '/login'
     | '/clients'
+    | '/login'
     | '/clients/$clientId'
     | '/clients/$clientId/pages/$pageId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/login'
     | '/clients'
+    | '/login'
     | '/clients/$clientId'
     | '/clients/$clientId/pages/$pageId'
   id:
     | '__root__'
-    | '/_protected'
-    | '/_protected/'
-    | '/login/'
-    | '/_protected/clients/'
-    | '/_protected/clients/$clientId/'
-    | '/_protected/clients/$clientId/pages/$pageId/'
+    | '/_layout'
+    | '/_layout/'
+    | '/_layout/clients/'
+    | '/_layout/login/'
+    | '/_layout/clients/$clientId/'
+    | '/_layout/clients/$clientId/pages/$pageId/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  ProtectedRoute: typeof ProtectedRouteWithChildren
-  LoginIndexRoute: typeof LoginIndexRoute
+  LayoutRoute: typeof LayoutRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  ProtectedRoute: ProtectedRouteWithChildren,
-  LoginIndexRoute: LoginIndexRoute,
+  LayoutRoute: LayoutRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -198,37 +198,38 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/_protected",
-        "/login/"
+        "/_layout"
       ]
     },
-    "/_protected": {
-      "filePath": "_protected.tsx",
+    "/_layout": {
+      "filePath": "_layout.tsx",
       "children": [
-        "/_protected/",
-        "/_protected/clients/",
-        "/_protected/clients/$clientId/",
-        "/_protected/clients/$clientId/pages/$pageId/"
+        "/_layout/",
+        "/_layout/clients/",
+        "/_layout/login/",
+        "/_layout/clients/$clientId/",
+        "/_layout/clients/$clientId/pages/$pageId/"
       ]
     },
-    "/_protected/": {
-      "filePath": "_protected/index.tsx",
-      "parent": "/_protected"
+    "/_layout/": {
+      "filePath": "_layout/index.tsx",
+      "parent": "/_layout"
     },
-    "/login/": {
-      "filePath": "login/index.tsx"
+    "/_layout/clients/": {
+      "filePath": "_layout/clients/index.tsx",
+      "parent": "/_layout"
     },
-    "/_protected/clients/": {
-      "filePath": "_protected/clients/index.tsx",
-      "parent": "/_protected"
+    "/_layout/login/": {
+      "filePath": "_layout/login/index.tsx",
+      "parent": "/_layout"
     },
-    "/_protected/clients/$clientId/": {
-      "filePath": "_protected/clients/$clientId/index.tsx",
-      "parent": "/_protected"
+    "/_layout/clients/$clientId/": {
+      "filePath": "_layout/clients/$clientId/index.tsx",
+      "parent": "/_layout"
     },
-    "/_protected/clients/$clientId/pages/$pageId/": {
-      "filePath": "_protected/clients/$clientId/pages/$pageId/index.tsx",
-      "parent": "/_protected"
+    "/_layout/clients/$clientId/pages/$pageId/": {
+      "filePath": "_layout/clients/$clientId/pages/$pageId/index.tsx",
+      "parent": "/_layout"
     }
   }
 }

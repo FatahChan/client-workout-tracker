@@ -2,31 +2,9 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import "./index.css";
-// Import the generated route tree
 import { routeTree } from "./routeTree.gen";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import NotFound from "./components/NotFound";
-
-import { get, set, del } from "idb-keyval";
-import {
-  PersistedClient,
-  Persister,
-  PersistQueryClientProvider,
-} from "@tanstack/react-query-persist-client";
-
-export function createIDBPersister(idbValidKey: IDBValidKey = "reactQuery") {
-  return {
-    persistClient: async (client: PersistedClient) => {
-      await set(idbValidKey, client);
-    },
-    restoreClient: async () => {
-      return await get<PersistedClient>(idbValidKey);
-    },
-    removeClient: async () => {
-      await del(idbValidKey);
-    },
-  } as Persister;
-}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,8 +14,6 @@ const queryClient = new QueryClient({
   },
 });
 
-const persister = createIDBPersister();
-
 // Create a new router instance
 const router = createRouter({
   routeTree,
@@ -46,12 +22,7 @@ const router = createRouter({
   },
   Wrap: ({ children }) => {
     return (
-      <PersistQueryClientProvider
-        client={queryClient}
-        persistOptions={{ persister, buster: "24-9-2024" }}
-      >
-        {children}
-      </PersistQueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
   },
   defaultNotFoundComponent: () => <NotFound />,
