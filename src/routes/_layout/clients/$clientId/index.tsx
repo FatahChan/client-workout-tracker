@@ -176,7 +176,7 @@ function PagesGrid({ clientId }: { clientId: string }) {
     queryFn: () => listPages(clientId),
   });
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4 p-4">
       <AddPageCard clientId={clientId} />
       {pages?.map((page) => (
         <PageCard key={page.id} clientId={clientId} page={page} />
