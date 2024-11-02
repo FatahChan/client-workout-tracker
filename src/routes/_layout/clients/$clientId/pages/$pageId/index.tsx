@@ -71,7 +71,7 @@ function SectionsGrid({ pageId }: { pageId: string }) {
     queryFn: () => listSections(pageId),
   });
   return (
-    <div className="flex flex-wrap flex-col gap-4 md:flex-row justify-center items-center ">
+    <div className="flex flex-wrap flex-col gap-4 md:flex-row justify-center items-start ">
       {sections?.map((section) => {
         return (
           <SectionTableWrappedWithContext key={section.id} section={section} />

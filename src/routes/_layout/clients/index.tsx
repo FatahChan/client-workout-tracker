@@ -52,7 +52,7 @@ function ClientsPage() {
   return (
     <>
       <h2 className="text-2xl font-bold pb-4">Clients</h2>
-      <div className="flex flex-wrap gap-4">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4 p-4">
         <AddClientButton />
         {data?.map((client) => (
           <CardTile key={client.id}>
